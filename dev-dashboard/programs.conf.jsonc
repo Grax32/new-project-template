@@ -1,0 +1,17 @@
+{
+  // Dev Dashboard - Program Configuration
+  // Each key is a unique program ID; values define how to run the program.
+  "programs": {
+    "api-debug": {
+      "name": "API (Debug)",
+      "cmd": "npx",
+      "args": ["nx", "serve", "api", "--configuration=development"]
+    },
+
+    "web-dev": {
+      "name": "Web (Angular)",
+      "cmd": "npx",
+      "args": ["nx", "serve", "web"]
+    }
+  }
+}
