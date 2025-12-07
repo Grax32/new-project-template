@@ -1,0 +1,16 @@
+{
+  "default": true,
+  "MD013": false, // Disable line length rule
+  "MD022": false, // Ignore blanks around headings
+  "MD032": false, // Ignore blanks around lists
+  "MD033": false, // Allow inline HTML
+  "MD034": false, // Allow bare URLs
+  "MD040": false, // Don't require code block language
+  "MD047": false, // Ignore single trailing newline
+  "MD024": false, // Allow duplicate headings
+  "MD025": false, // Allow multiple top-level headings
+  "MD029": false, // Ignore ordered list item prefix
+  "MD041": false, // Don't require first line to be a heading
+  "MD007": { "indent": 2 }, // Allow 2-space list indentation
+  "MD012": false // Allow multiple consecutive blank lines
+}
