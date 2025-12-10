@@ -1,109 +1,282 @@
-# NodeProjectTemplate
+# Node Project Template
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+> An opinionated full-stack monorepo template for modern web applications
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+This template provides a production-ready foundation for building scalable web applications using battle-tested technologies and best practices. It's designed for teams that want to start with a solid architecture rather than making fundamental decisions from scratch.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 🎯 What Makes This Opinionated?
 
-## Generate a library
+We've made deliberate choices to eliminate decision fatigue:
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+- **Nx Monorepo**: For efficient code sharing and tooling across apps
+- **NestJS + Angular**: TypeScript-first frameworks with excellent DX
+- **PostgreSQL + MikroORM**: Robust database with type-safe queries
+- **Docker First**: Containerized development and deployment
+- **OAuth 2.0**: Built-in authentication with Dex (OpenID Connect)
+- **PM2**: Production process management
+- **Dev Dashboard**: Custom tooling for local development
+
+## 🚀 Tech Stack
+
+### Backend
+- **NestJS** - Progressive Node.js framework
+- **TypeScript** - Type-safe development
+- **MikroORM** - TypeScript ORM for PostgreSQL
+- **JWT + OAuth 2.0** - Authentication & authorization
+
+### Frontend
+- **Angular** - Enterprise-ready SPA framework
+- **RxJS** - Reactive programming
+- **SCSS** - Component-scoped styling
+
+### Infrastructure
+- **Nx** - Smart monorepo build system
+- **Docker & Docker Compose** - Containerization
+- **PostgreSQL** - Primary database
+- **Dex** - OpenID Connect provider
+- **PM2** - Production process manager
+
+### Development
+- **Jest** - Unit testing
+- **Playwright** - E2E testing
+- **ESLint + Prettier** - Code quality
+- **Custom Dev Dashboard** - Local development tooling
+
+## 🏁 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- Docker & Docker Compose
+- VS Code (recommended)
+
+### Installation
+
+```bash
+# Clone the template
+git clone https://github.com/Grax32/new-project-template.git my-project
+cd my-project
+
+# Install dependencies
+npm install
+
+# Start development environment
+npm run dev
 ```
 
-## Run tasks
+Visit:
+- **Web App**: http://localhost:4200
+- **API**: http://localhost:6314
+- **Dev Dashboard**: http://localhost:4500
+- **Dex OAuth**: http://localhost:5556/dex
 
-To build the library use:
-
-```sh
-npx nx build pkg1
-```
-
-To run any task with Nx use:
-
-```sh
-npx nx <target> <project-name>
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
+## 📁 Project Structure
 
 ```
-npx nx release
+node-project-template/
+├── apps/
+│   ├── api/                 # NestJS API server
+│   │   ├── src/
+│   │   │   ├── controllers/ # HTTP endpoints
+│   │   │   ├── entities/    # Database models
+│   │   │   ├── services/    # Business logic
+│   │   │   └── main.ts      # Application entry
+│   │   └── mikro-orm.config.ts
+│   ├── web/                 # Angular application
+│   │   ├── src/
+│   │   │   ├── app/         # Angular components
+│   │   │   └── styles.scss  # Global styles
+│   └── web-e2e/            # E2E tests
+├── shared/
+│   └── models/             # Shared TypeScript types
+├── dev-dashboard/          # Custom development tooling
+├── docker/
+│   ├── postgres/           # Database setup
+│   └── dex/               # OAuth provider config
+├── packages/               # Future shared libraries
+├── migrations/            # Database migrations
+├── docker-compose.yml     # Local services
+├── nx.json               # Nx configuration
+└── package.json          # Root dependencies
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+## 🛠️ Development Workflow
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Daily Development
 
-## Keep TypeScript project references up to date
+```bash
+# Start everything
+npm run dev
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
-
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
-
-```sh
-npx nx sync
+# Or start services individually
+npm run docker:up      # Database + OAuth
+npm run dev:api        # API server only
+npm run dev:web        # Frontend only
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+### Database Operations
 
-```sh
-npx nx sync:check
+```bash
+# Create migration
+npm run mikro:migrate:create
+
+# Run migrations
+npm run mikro:migrate:up
+
+# Rollback
+npm run mikro:migrate:down
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+### Testing
 
-## Set up CI!
+```bash
+# Unit tests
+nx test api
+nx test web
 
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+# E2E tests
+nx e2e web-e2e
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+## 📊 Dev Dashboard
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+A custom web interface for managing your development environment:
 
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```bash
+npm run dev-dashboard
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Features:
+- **Docker Services**: Start/stop/restart containers
+- **Programs**: Manage API and web dev servers
+- **Logs**: Real-time log viewing
+- **Status Monitoring**: Live updates via SSE
 
-## Install Nx Console
+## 🚢 Production Deployment
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+### PM2 Process Management
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+# Build applications
+nx build api --configuration=production
+nx build web --configuration=production
 
-## Useful links
+# Start with PM2
+npm run pm2:start
 
-Learn more:
+# Monitor processes
+npm run pm2:logs
+```
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Docker Deployment
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+# Build production images
+docker build -t my-api ./apps/api
+docker build -t my-web ./apps/web
+
+# Deploy with docker-compose.prod.yml
+docker compose -f docker-compose.prod.yml up -d
+```
+
+## 🔧 Available Scripts
+
+### Development
+- `npm run dev` - Start full development environment
+- `npm run dev:api` - API server only
+- `npm run dev:web` - Frontend only
+- `npm run dev-dashboard` - Launch dev dashboard
+
+### Docker
+- `npm run docker:up` - Start containers
+- `npm run docker:down` - Stop containers
+- `npm run docker:logs` - View container logs
+- `npm run docker:reset` - Reset database
+
+### Database
+- `npm run mikro:migrate:create` - Create migration
+- `npm run mikro:migrate:up` - Run migrations
+- `npm run mikro:migrate:down` - Rollback migration
+
+### Production
+- `npm run pm2:start` - Start with PM2
+- `npm run pm2:stop` - Stop PM2 processes
+- `npm run pm2:restart` - Restart PM2 processes
+- `npm run pm2:logs` - View PM2 logs
+
+## 🎨 Design Decisions
+
+### Why Nx?
+- **Code Sharing**: Libraries shared between API and web
+- **Caching**: Smart rebuilds based on dependency graphs
+- **Tooling**: Generators, migrations, and plugins
+- **Scaling**: Proven for large enterprise monorepos
+
+### Why NestJS?
+- **Modular Architecture**: Dependency injection, modules
+- **TypeScript First**: Excellent type safety
+- **Enterprise Ready**: Guards, interceptors, pipes
+- **Ecosystem**: Rich plugin ecosystem
+
+### Why MikroORM?
+- **Type Safety**: Entity definitions generate types
+- **Performance**: Identity map, unit of work
+- **Migrations**: Database schema versioning
+- **Query Builder**: Type-safe query APIs
+
+### Why Docker First?
+- **Consistency**: Same environment everywhere
+- **Isolation**: No "works on my machine" issues
+- **Scalability**: Easy horizontal scaling
+- **CI/CD**: Same containers for testing and production
+
+## 🤝 Contributing
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/my-feature`
+3. **Commit** changes: `git commit -am 'Add my feature'`
+4. **Push** to branch: `git push origin feature/my-feature`
+5. **Submit** a Pull Request
+
+### Code Quality
+- Follow TypeScript strict mode
+- Write tests for new features
+- Update documentation
+- Use conventional commits
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🆘 Troubleshooting
+
+### Common Issues
+
+**Port conflicts?**
+```bash
+# Check what's using ports
+netstat -ano | findstr :4200
+netstat -ano | findstr :6314
+```
+
+**Database connection issues?**
+```bash
+# Reset database
+npm run docker:reset
+npm run mikro:migrate:up
+```
+
+**Permission issues with Docker?**
+```bash
+# On Windows, ensure Docker Desktop is running
+# On Linux/Mac, you might need sudo
+```
+
+### Getting Help
+
+- Check [DEVELOPMENT.md](DEVELOPMENT.md) for detailed setup
+- Review [architecture.md](architecture.md) for project structure
+- Open an issue for bugs or feature requests
+
+---
+
+**Happy coding!** 🎉 This template is designed to get you productive quickly while following industry best practices.
