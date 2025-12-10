@@ -13,7 +13,6 @@ We've made deliberate choices to eliminate decision fatigue:
 - **PostgreSQL + MikroORM**: Robust database with type-safe queries
 - **Docker First**: Containerized development and deployment
 - **OAuth 2.0**: Built-in authentication with Dex (OpenID Connect)
-- **PM2**: Production process management
 - **Dev Dashboard**: Custom tooling for local development
 
 ## 🚀 Tech Stack
@@ -34,7 +33,6 @@ We've made deliberate choices to eliminate decision fatigue:
 - **Docker & Docker Compose** - Containerization
 - **PostgreSQL** - Primary database
 - **Dex** - OpenID Connect provider
-- **PM2** - Production process manager
 
 ### Development
 - **Jest** - Unit testing
@@ -137,7 +135,7 @@ nx test web
 nx e2e web-e2e
 ```
 
-## 📊 Dev Dashboard
+## Dev Dashboard
 
 A custom web interface for managing your development environment:
 
@@ -150,22 +148,6 @@ Features:
 - **Programs**: Manage API and web dev servers
 - **Logs**: Real-time log viewing
 - **Status Monitoring**: Live updates via SSE
-
-## 🚢 Production Deployment
-
-### PM2 Process Management
-
-```bash
-# Build applications
-nx build api --configuration=production
-nx build web --configuration=production
-
-# Start with PM2
-npm run pm2:start
-
-# Monitor processes
-npm run pm2:logs
-```
 
 ### Docker Deployment
 
@@ -196,12 +178,6 @@ docker compose -f docker-compose.prod.yml up -d
 - `npm run mikro:migrate:create` - Create migration
 - `npm run mikro:migrate:up` - Run migrations
 - `npm run mikro:migrate:down` - Rollback migration
-
-### Production
-- `npm run pm2:start` - Start with PM2
-- `npm run pm2:stop` - Stop PM2 processes
-- `npm run pm2:restart` - Restart PM2 processes
-- `npm run pm2:logs` - View PM2 logs
 
 ## 🎨 Design Decisions
 

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/content/dashboard.css">
+</head>
+
+<body>
+    <div id="connection-banner" class="connection-banner hidden">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Server connection unavailable
+    </div>
+    <h1><i class="fa-solid fa-user-gear"></i> Dev Dashboard</h1>
+
+    <div class="section-header">
+        <h2>Docker Compose Services</h2>
+        <div class="btn-group">
+            <button class="btn btn-start start-all-docker" onclick="serviceGroupAction('docker','start')">Start All</button>
+            <button class="btn btn-stop stop-all-docker" onclick="serviceGroupAction('docker','stop')">Stop All</button>
+        </div>
+    </div>
+    <div class="grid" id="docker-grid"></div>
+
+    <div class="section-header">
+        <h2>Programs</h2>
+        <div class="btn-group">
+            <button class="btn btn-start start-all-programs" onclick="serviceGroupAction('programs','start')">Start All</button>
+            <button class="btn btn-stop stop-all-programs" onclick="serviceGroupAction('programs','stop')">Stop All</button>
+        </div>
+    </div>
+    <div class="grid" id="programs-grid"></div>
+
+    <div id="toast-container"></div>
+    <script src="/content/dashboard.js"></script>
+
+    <template id="service-card-template">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">${serviceName}</span>
+                <span class="status ${status}">${status}</span>
+            </div>
+            <div class="card-actions">
+                <div class="btn-group">
+                    <button class="btn btn-start">Start</button>
+                    <button class="btn btn-stop">Stop</button>
+                    <button class="btn btn-restart">Restart</button>
+                </div>
+                <button class="btn btn-logs">Logs</button>
+            </div>
+        </div>
+    </template>
+</body>
+
+</html>
