@@ -1,63 +1,349 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 1rem; }
-h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #38bdf8; }
-h2 { font-size: 1rem; margin: 0; color: #94a3b8; }
-.section-header { display: flex; justify-content: space-between; align-items: center; margin: 1rem 0 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid #334155; max-width: 900px; }
-a { color: #38bdf8; text-decoration: none; }
-a:hover { text-decoration: underline; }
-.nav { margin-bottom: 1rem; }
-.nav a { display: inline-flex; align-items: center; gap: 0.25rem; }
-.grid { display: flex; flex-direction: column; gap: 0.5rem; max-width: 900px; }
-.card { background: #1e293b; border-radius: 8px; padding: 1rem; }
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-.card-title { font-weight: 600; }
-.card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
-.btn-group { display: flex; gap: 0.25rem; }
-.status { font-size: 0.75rem; padding: 2px 8px; border-radius: 9999px; }
-.status.running, .status.Up { background: #065f46; color: #6ee7b7; }
-.status.stopped, .status.exited { background: #7f1d1d; color: #fca5a5; }
-.status.error { background: #92400e; color: #fcd34d; }
-.status.pending { background: #7c3aed; color: #ddd6fe; }
-.btn { padding: 0.375rem 0.75rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-.btn-start { background: #059669; color: white; }
-.btn-stop { background: #dc2626; color: white; }
-.btn-restart { background: #2563eb; color: white; }
-.btn-logs { background: #475569; color: white; }
-.btn:hover { opacity: 0.85; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.ports { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
-.log-container { max-width: 900px; }
-.log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-.log-title { font-size: 1.25rem; color: #e2e8f0; }
-.log-box { background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 1rem; font-family: monospace; font-size: 0.75rem; max-height: 70vh; overflow-y: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.4; }
-.log-box:empty::before { content: '(no logs)'; color: #64748b; }
-.log-actions { display: flex; gap: 0.5rem; }
+:root {
+  --status-healthy: #16a34a;
+  --status-warning: #f59e0b;
+  --status-unhealthy: #dc2626;
+  --status-unknown: #6b7280;
+  --status-pending: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+}
+body {
+  font-family: system-ui, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+}
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #38bdf8;
+}
+h2 {
+  font-size: 1rem;
+  margin: 0;
+  color: #94a3b8;
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0 0.5rem;
+  padding: 0.25rem;
+  border-bottom: 1px solid #334155;
+  max-width: 900px;
+  background-color: #1e293b33;
+}
+
+a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+.nav {
+  margin-bottom: 1rem;
+}
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 900px;
+}
+.card {
+  background: #1e293b;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.card-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 100px;
+}
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 140px;
+}
+.btn-group {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.status.running,
+.status.Up {
+  background: #065f46;
+  color: #6ee7b7;
+}
+.status.stopped,
+.status.exited {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+.status.error {
+  background: #92400e;
+  color: #fcd34d;
+}
+.status.pending {
+  background: #7c3aed;
+  color: #ddd6fe;
+}
+
+.status.restarting,
+.status.killing,
+.status.stopping,
+.status.starting,
+.status.paused {
+  background-color: var(--status-pending);
+  color: #ddd6fe;
+}
+
+.status.running {
+  background-color: var(--status-healthy);
+  color: white;
+}
+
+.status-value::before {
+  content: '*';
+
+  /* The required Font Awesome font family (use the correct one for your setup) */
+  font-family: 'Font Awesome 7 Free';
+
+  /* The weight for 'fa-solid' icons is 900 */
+  font-weight: 900;
+
+  /* Optional styling to make it look like a status indicator */
+  color: white;
+  margin-right: 8px; /* Add some space between icon and text */
+
+  font-size: 0.85rem;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.status.running::before {
+  /* The specific Unicode value for 'fa-circle-check' */
+  content: '\f058';
+}
+
+.status.stopped::before,
+.status.error::before {
+  /* The specific Unicode value for 'fa-circle-xmark' */
+  content: '\f057';
+},
+
+.status.killed,
+.status.stopped,
+.status.error {
+  background-color: var(--status-unhealthy);
+  color: #fca5a5;
+}
+
+.status.unknown {
+  color: var(--status-unknown);
+}
+
+.status {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+}
+
+.btn {
+  padding: 0.375rem 0.75rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.btn-start {
+  background: #059669;
+  color: white;
+}
+.btn-stop {
+  background: #dc2626;
+  color: white;
+}
+.btn-restart {
+  background: #2563eb;
+  color: white;
+}
+.btn:hover {
+  opacity: 0.85;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ports {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+.btn-logs {
+  background: #475569;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+.log-container {
+  max-width: 900px;
+}
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.log-title {
+  font-size: 1.25rem;
+  color: #e2e8f0;
+}
+.log-box {
+  background: #0f172a;
+  border: 1px solid #334155;
+  padding: 1rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.4;
+}
+.log-box:empty::before {
+  content: '(no logs)';
+  color: #64748b;
+}
+.log-actions {
+  display: flex;
+  gap: 0.5rem;
+}
 
 /* Toast notifications */
-#toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; }
-.toast { background: #7f1d1d; color: #fca5a5; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; max-width: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: toast-in 0.2s ease-out; }
-.toast.success { background: #065f46; color: #6ee7b7; }
-@keyframes toast-in { from { opacity: 0; transform: translateX(1rem); } to { opacity: 1; transform: translateX(0); } }
-@keyframes toast-out { from { opacity: 1; } to { opacity: 0; } }
+#toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.toast {
+  background: #7f1d1d;
+  color: #fca5a5;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  max-width: 350px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: toast-in 0.2s ease-out;
+}
+.toast.success {
+  background: #065f46;
+  color: #6ee7b7;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes toast-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
 
 /* Connection status banner */
 .connection-banner {
-    background: #ca8a04;
-    color: #fef9c3;
-    padding: 0.5rem 1rem;
-    text-align: center;
-    font-size: 0.875rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    border-radius: 4px;
+  background: #ca8a04;
+  color: #fef9c3;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 .connection-banner.hidden {
-    display: none;
+  display: none;
 }
 .connection-banner i {
-    font-size: 1rem;
+  font-size: 1rem;
+}
+
+.status-icon {
+  font-size: 1.1rem;
+  vertical-align: middle;
+}
+
+.status-health {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.status-healthy {
+  color: var(--status-healthy);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.status-unhealthy {
+  color: var(--status-unhealthy);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hidden {
+  display: none;
 }

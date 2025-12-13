@@ -9,6 +9,7 @@
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/content/dashboard.css">
+
 </head>
 
 <body>
@@ -21,8 +22,12 @@
     <div class="section-header">
         <h2>Docker Compose Services</h2>
         <div class="btn-group">
-            <button class="btn btn-start start-all-docker" onclick="serviceGroupAction('docker','start')">Start All</button>
-            <button class="btn btn-stop stop-all-docker" onclick="serviceGroupAction('docker','stop')">Stop All</button>
+            <button class="btn btn-start start-all-docker">
+                <i class="fa-solid fa-rocket"></i> Start All
+            </button>
+            <button class="btn btn-stop stop-all-docker">
+                <i class="fa-solid fa-ban"></i> Stop All
+            </button>
         </div>
     </div>
     <div class="grid" id="docker-grid"></div>
@@ -30,8 +35,12 @@
     <div class="section-header">
         <h2>Programs</h2>
         <div class="btn-group">
-            <button class="btn btn-start start-all-programs" onclick="serviceGroupAction('programs','start')">Start All</button>
-            <button class="btn btn-stop stop-all-programs" onclick="serviceGroupAction('programs','stop')">Stop All</button>
+            <button class="btn btn-start start-all-programs">
+                <i class="fa-solid fa-rocket"></i> Start All
+            </button>
+            <button class="btn btn-stop stop-all-programs">
+                <i class="fa-solid fa-ban"></i> Stop All
+            </button>
         </div>
     </div>
     <div class="grid" id="programs-grid"></div>
@@ -41,9 +50,20 @@
 
     <template id="service-card-template">
         <div class="card">
-            <div class="card-header">
+            <div class="card-info">
                 <span class="card-title">${serviceName}</span>
-                <span class="status ${status}">${status}</span>
+                <div class="card-meta">
+                    <a href="http://localhost:4500/">Open Service</a>
+                    <span class="ports">Port(s): 4500, 5432</span>
+                    <button class="btn btn-logs">Logs</button>
+                </div>
+            </div>
+            <div class="card-status">
+                <span class="status status-value">${status}</span>
+                <span class="status-health">
+                    <span class="status-healthy"><i class="fa-solid fa-check-circle"></i> Healthy</span>
+                    <span class="status-unhealthy"><i class="fa-solid fa-times-circle"></i> Unhealthy</span>
+                </span>
             </div>
             <div class="card-actions">
                 <div class="btn-group">
@@ -51,7 +71,6 @@
                     <button class="btn btn-stop">Stop</button>
                     <button class="btn btn-restart">Restart</button>
                 </div>
-                <button class="btn btn-logs">Logs</button>
             </div>
         </div>
     </template>

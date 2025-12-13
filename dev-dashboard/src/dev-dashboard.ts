@@ -4,11 +4,11 @@
  */
 
 // import config first so that it loads before other modules
-import './config';
+import './services/config';
 
-import { ensureDockerRunning } from './library/docker';
-import { startServer } from './server';
-import { serviceGroups } from './impl/service-groups-collection';
+import { ensureDockerRunning } from './core/docker';
+import { startServer } from './services/server';
+import { serviceGroups } from './service-agents/service-groups-collection';
 
 // Check Docker is running before starting
 ensureDockerRunning();
@@ -32,12 +32,29 @@ async function startAllServices() {
 
 startAllServices();
 
-// Graceful shutdown
-process.on('SIGINT', () => {
-    console.log('\nShutting down...');
+function cleanShutdown() {
+    console.log('Shutting down services...');
     Object.entries(serviceGroups).forEach(([name, group]) => {
         console.log(`Shutting down service group: ${name}`);
         group.shutdown();
     });
     process.exit(0);
+}
+
+if (process.stdin.isTTY && process.stdin.setRawMode) {
+    console.log('Press "q" to quit the Dev Dashboard.');
+
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.on('data', (buf) => {
+        const input = buf.toString().toLowerCase();
+        if (input === 'q' || buf[0] === 27 || buf[0] === 3) { // 'q' or ESC key or Ctrl+C
+            cleanShutdown();
+        }
+    });
+}
+
+process.on('SIGINT', () => {
+    console.log('\nShutting down...');
+    cleanShutdown();
 });

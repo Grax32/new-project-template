@@ -3,15 +3,22 @@
   // Each key is a unique program ID; values define how to run the program.
   "programs": {
     "api-debug": {
+      // The working directory for the command.  Relative to the config file
+      "cwd": "../",
       "name": "API (Debug)",
       "cmd": "npx",
-      "args": ["nx", "serve", "api", "--configuration=development"]
+      "args": ["nx", "serve", "api", "--configuration=development"],
+      "link": "http://localhost:3333",
+      "openPorts": [3333]
     },
 
     "web-dev": {
+      "cwd": "../",
       "name": "Web (Angular)",
       "cmd": "npx",
-      "args": ["nx", "serve", "web"]
+      "args": ["nx", "serve", "web"],
+      "link": "http://localhost:4200",
+      "openPorts": [4200]
     }
   }
 }

@@ -1,4 +1,4 @@
-export type ServiceStatus = 
+export type ServiceStatus =
     | 'restarting'
     | 'killing'
     | 'killed'
@@ -10,14 +10,27 @@ export type ServiceStatus =
     | 'paused'
     | 'unknown';
 
+export interface IServiceState {
+    serviceId: string;
+    name: string;
+    status: ServiceStatus;
+    health: { isHealthy: boolean; reason: string; };
+}
+
 export interface IService {
-    id: string;
+    serviceId: string;
     name: string;
     start(): Promise<void>;
     stop(): Promise<void>;
     restart(): Promise<void>;
-    status(): Promise<ServiceStatus>;
     logs(tail?: number): Promise<string>;
+
+    state(): Promise<IServiceState>;
+    config(): Promise<{
+        name: string;
+        link: string;
+        openPorts: number[];
+    }>;
 }
 
 export interface IServiceGroup {
@@ -25,6 +38,6 @@ export interface IServiceGroup {
     services: Promise<IService[]>;
     start(): Promise<void>;
     stop(): Promise<void>;
-    status(): Promise<Record<string, ServiceStatus>>;
+    state(): Promise<Record<string, IServiceState>>;
     shutdown(): Promise<void>;
 }

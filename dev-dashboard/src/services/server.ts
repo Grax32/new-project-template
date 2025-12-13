@@ -3,10 +3,15 @@ import config from './config';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { readFileSync, existsSync } from 'fs';
 import { join, extname } from 'path';
-import { sseRoutes } from './routes/sse-routes';
-import { serviceGroupParamRoutes } from './routes/service-group-routes';
+import { sseRoutes, serviceGroupParamRoutes } from '../routes';
 
-const PUBLIC_DIR = join(config.root, 'html');
+const PUBLIC_DIR = join(config.solutionRoot, 'html');
+const HOME = join(PUBLIC_DIR, 'index.html');
+
+if (!existsSync(HOME)) {
+    console.error(`Error: Public directory not found at ${PUBLIC_DIR}`);
+    process.exit(1);
+}
 
 const MIME_TYPES: Record<string, string> = {
     '.html': 'text/html',
@@ -93,7 +98,7 @@ const server = createServer(async (req, res) => {
     }
 
     // Serve static files
-    const filePath = join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
+    const filePath = pathname === '/' ? HOME : join(PUBLIC_DIR, pathname);
     if (serveStatic(res, filePath)) return;
 
     res.writeHead(404);

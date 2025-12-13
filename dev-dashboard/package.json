@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsx src/dev-dashboard.ts"
+    "start": "tsx src/dev-dashboard.ts",
+    "build": "rimraf dist && tsc -p tsconfig.json"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "ansi_up": "^6.0.6",
     "jsonc-parser": "^3.3.1",
-    "tree-kill": "^1.2.2"
+    "tree-kill": "^1.2.2",
+    "rimraf": "^5.0.1"
   }
 }

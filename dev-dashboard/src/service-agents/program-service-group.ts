@@ -1,25 +1,54 @@
 import { spawn, ChildProcess } from 'child_process';
 import fs from 'fs';
 import treeKill from 'tree-kill';
-import { IService, IServiceGroup, ServiceStatus } from '../interfaces/service-group';
-import config from '../config';
-import { getLogPath, readLogs } from '../logs';
-import { emitSSEUpdate, emitLogChange } from '../routes/sse-routes';
+import { IService, IServiceGroup, IServiceState, ServiceStatus } from '../interfaces/service-group';
+import config from '../services/config';
+import { getLogPath, readLogs } from '../services/logs';
+import { eventBus } from '../services/event-bus';
+
+export const programServicesserviceGroup = "programs";
 
 class ProgramService implements IService {
     private process?: ChildProcess;
     private currentStatus: ServiceStatus = 'stopped';
 
-    public logVersion = 0;
-
     constructor(
         public readonly name: string,
-        public readonly id: string,
+        public readonly serviceId: string,
         private readonly cmd: string,
         private readonly args: string[],
         private readonly cwd: string
     ) {
-     }
+    }
+    config(): Promise<{ name: string; link: string; openPorts: number[]; }> {
+        const serviceConfig = config.programs[this.serviceId];
+        return Promise.resolve({
+            name: serviceConfig.name,
+            link: serviceConfig.link,
+            openPorts: serviceConfig.openPorts,
+        });
+    }
+
+    private async emitServiceStatusUpdate() {
+        const state = await this.state();
+
+        eventBus.serviceStatusEvents.emit({
+            type: 'service-status',
+            serviceId: this.serviceId,
+            serviceGroup: programServicesserviceGroup,
+            status: state.status,
+            healthy: state.health.isHealthy,
+            healthReason: state.health.reason,
+        });
+    }
+
+    private async emitLogChange() {
+        eventBus.logChangeEvents.emit({
+            type: 'log-change',
+            serviceId: this.serviceId,
+            serviceGroup: programServicesserviceGroup
+        });
+    }
 
     async start(): Promise<void> {
         if (this.process) {
@@ -28,10 +57,10 @@ class ProgramService implements IService {
         }
 
         this.currentStatus = 'starting';
-        emitSSEUpdate();
+        await this.emitServiceStatusUpdate();
 
         console.log(`Starting program: ${this.name}`);
-        const logPath = getLogPath(this.id);
+        const logPath = getLogPath(this.serviceId);
         const logFd = fs.createWriteStream(logPath, { flags: 'w' });
 
         const proc = spawn(this.cmd, this.args, {
@@ -40,15 +69,15 @@ class ProgramService implements IService {
             stdio: ['ignore', 'pipe', 'pipe'],
         });
 
+        console.log(`Program ${this.name} started with PID: ${proc.pid}`);
+        console.log(`${this.cwd}> ${this.cmd} ${this.args.join(' ')}`);
+
         proc.stdout.pipe(logFd);
         proc.stderr.pipe(logFd);
 
         this.process = proc;
 
-        const logChanged = () => {
-            this.logVersion++;
-            emitLogChange(this.id);
-        };
+        const logChanged = () => this.emitLogChange();
 
         proc.stdout?.on('data', logChanged);
         proc.stderr?.on('data', logChanged);
@@ -56,14 +85,14 @@ class ProgramService implements IService {
         proc.on('spawn', async () => {
             console.log(`Program ${this.name} is now running.`);
             this.currentStatus = 'running';
-            emitSSEUpdate();
+            await this.emitServiceStatusUpdate();
         });
 
         proc.on('error', async (err) => {
             console.log(`Failed to start program ${this.name}:`, err.message);
             this.currentStatus = 'error';
             this.process = undefined;
-            emitSSEUpdate();
+            await this.emitServiceStatusUpdate();
         });
 
         proc.on('close', async (code, signal) => {
@@ -85,7 +114,7 @@ class ProgramService implements IService {
                 this.currentStatus = 'error';
             }
             this.process = undefined;
-            emitSSEUpdate();
+            await this.emitServiceStatusUpdate();
         });
     }
 
@@ -98,7 +127,8 @@ class ProgramService implements IService {
 
         if (this.currentStatus === 'stopping') {
             this.currentStatus = 'killing';
-            emitSSEUpdate();
+            await this.emitServiceStatusUpdate();
+
             if (this.process.pid) {
                 console.log(`Attempting to kill program ${this.name}.`);
                 treeKill(this.process.pid, 'SIGKILL');
@@ -107,7 +137,7 @@ class ProgramService implements IService {
         }
 
         this.currentStatus = 'stopping';
-        emitSSEUpdate();
+        await this.emitServiceStatusUpdate();
 
         // use a local variable to ensure that we have the correct process reference, regardless of any changes to this.process
         const child = this.process;
@@ -128,7 +158,7 @@ class ProgramService implements IService {
             if (shouldKill) {
                 console.log(`Force killing program: ${this.name} after timeout`);
                 this.currentStatus = 'killing';
-                emitSSEUpdate();
+                await this.emitServiceStatusUpdate();
                 treeKill(pid, 'SIGKILL');
             }
         }, 30_000); // 30 seconds
@@ -161,8 +191,18 @@ class ProgramService implements IService {
         return this.currentStatus;
     }
 
+    async state(): Promise<IServiceState> {
+        // we need a better health check
+        return {
+            serviceId: this.serviceId,
+            name: this.name,
+            status: this.currentStatus,
+            health: { isHealthy: this.currentStatus === 'running', reason: this.currentStatus },
+        };
+    }
+
     async logs(tail?: number): Promise<string> {
-        const logLines = readLogs(this.id);
+        const logLines = readLogs(this.serviceId);
         if (tail !== undefined && tail > 0) {
             return logLines.slice(-tail).join('\n');
         }
@@ -184,27 +224,33 @@ class ProgramServiceGroup implements IServiceGroup {
             throw new Error('Services have already been loaded.');
         }
 
-        const { solutionRoot, programs: programsConfig } = config;
+        const { programs: programsConfig } = config;
 
-        const result = Object.entries(programsConfig).map(([id, cfg]) => new ProgramService(cfg.name, id, cfg.cmd, cfg.args, solutionRoot));
+        const result = Object.entries(programsConfig).map(([id, cfg]) => new ProgramService(
+            cfg.name,
+            id,
+            cfg.cmd,
+            cfg.args,
+            cfg.cwd
+        ));
         return result;
     }
 
     async start(): Promise<void> {
         await Promise.all(this.programServices.map(s => s.start()));
-        emitSSEUpdate();
     }
 
     async stop(): Promise<void> {
         await Promise.all(this.programServices.map(s => s.stop()));
-        emitSSEUpdate();
     }
 
-    async status(): Promise<Record<string, ServiceStatus>> {
-        const result: Record<string, ServiceStatus> = {};
+    async state(): Promise<Record<string, IServiceState>> {
+        const result: Record<string, IServiceState> = {};
 
-        for (const service of this.programServices) {
-            result[service.id] = await service.status();
+        const services = await this.services;
+
+        for (const service of services) {
+            result[service.name] = await service.state();
         }
 
         return result;
@@ -217,4 +263,4 @@ class ProgramServiceGroup implements IServiceGroup {
 
 }
 
-export const programsServiceGroup: IServiceGroup = new ProgramServiceGroup('programs');
+export const programsServiceCollection: IServiceGroup = new ProgramServiceGroup('programs');

@@ -1,15 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { getAllServices } from '../impl/service-groups-collection';
-import EventEmitter from 'events';
+import { getAllServices } from '../service-agents';
+import { LogChangeMessage, ServiceStatusMessage } from '../models';
+import { eventBus } from '../services/event-bus';
 
 type RouteHandler = (req: IncomingMessage, res: ServerResponse, params?: Record<string, string>) => Promise<void> | void;
 
-export const serviceStatusEvents = new EventEmitter();
-export const logChangeEvents = new EventEmitter();
-
-let statusSentTime: Date = new Date(0);
 const STATUS_INTERVAL = 30_000;
-const MIN_STATUS_INTERVAL = STATUS_INTERVAL / 2;
 
 function writeEventStreamHeader(res: ServerResponse) {
     res.writeHead(200, {
@@ -24,72 +20,69 @@ export const sseRoutes: Record<string, RouteHandler> = {
     'GET /api/logChangeEvents': (req, res) => {
         writeEventStreamHeader(res);
 
-        const onUpdate = (key: string) => {
-            res.write(`data: ${JSON.stringify({ key })}\n\n`);
-        };
+        // On log change, send log-change message to client
+        const sendEventToClient = (logChangeMessage: LogChangeMessage) => res.write(`data: ${JSON.stringify(logChangeMessage)}\n\n`);
 
-        logChangeEvents.on('log-change', onUpdate);
+        // Subscribe to log change events
+        eventBus.logChangeEvents.on('log-change', sendEventToClient);
 
-        onUpdate('initial');
+        // Send initial wildcard subscription message
+        sendEventToClient({ type: 'log-change', serviceId: '*', serviceGroup: '*' });
 
+        // Handle client disconnect
         req.on('close', () => {
-            logChangeEvents.off('log-change', onUpdate);
+            eventBus.logChangeEvents.off('log-change', sendEventToClient);
             console.log('[SSE] Log Events Client disconnected');
         });
     },
     'GET /api/serviceStatusEvents': (req, res) => {
         writeEventStreamHeader(res);
 
-        const fetchCurrentStatus = async () => {
-            // get list of all statuses in the format of serviceGroupName, serviceId, status
+        // On status update, send status message to client
+        const sendEventToClient = (statusUpdateMessage: ServiceStatusMessage) => res.write(`data: ${JSON.stringify(statusUpdateMessage)}\n\n`);
+
+        // Subscribe to status update events
+        eventBus.serviceStatusEvents.on('service-status', sendEventToClient);
+
+        const fetchAllServiceStatuses = async (): Promise<ServiceStatusMessage[]> => {
             const allServices = await getAllServices();
-            const allServicesWithStatus = await Promise.all(
-                allServices.map(async ({ groupName: serviceGroup, service }) => {
-                    const status = await service.status();
+            return await Promise.all(
+                allServices.map(async ({ serviceGroup, service }) => {
+                    const state = await service.state();
                     return {
+                        type: 'service-status',
+                        serviceId: service.serviceId,
                         serviceGroup,
-                        serviceName: service.name,
-                        serviceId: service.id,
-                        status,
+                        status: state.status,
+                        healthy: state.health.isHealthy,
+                        healthReason: state.health.reason,
                     };
                 })
             );
-
-return allServicesWithStatus;
         };
 
-const sendCurrentStatus = async () => {
-    const statuses = await fetchCurrentStatus();
-    res.write(`data: ${JSON.stringify({ statuses })}\n\n`);
-    statusSentTime = new Date();
-};
+        // Send all current statuses as individual service-status messages
+        fetchAllServiceStatuses().then(statusMsgs => {
+            for (const msg of statusMsgs) {
+                sendEventToClient(msg);
+            }
+        });
 
-const sendCurrentStatusOnInterval = async () => {
-    const now = new Date();
-    if (now.getTime() - statusSentTime.getTime() >= MIN_STATUS_INTERVAL) {
-        await sendCurrentStatus();
+        // Interval: send all statuses every 30s
+        const sendCurrentStatusOnInterval = async () => {
+            const statusMsgs = await fetchAllServiceStatuses();
+            for (const msg of statusMsgs) {
+                sendEventToClient(msg);
+            }
+        };
+
+        const interval = setInterval(sendCurrentStatusOnInterval, STATUS_INTERVAL);
+        eventBus.serviceStatusEvents.on('service-status', sendEventToClient);
+
+        req.on('close', () => {
+            clearInterval(interval);
+            eventBus.serviceStatusEvents.off('service-status', sendEventToClient);
+            console.log('[SSE] Status Events Client disconnected');
+        });
     }
 };
-
-sendCurrentStatus();
-
-const interval = setInterval(sendCurrentStatusOnInterval, STATUS_INTERVAL);
-const onUpdate = () => sendCurrentStatus();
-
-serviceStatusEvents.on('on-demand', onUpdate);
-
-req.on('close', () => {
-    clearInterval(interval);
-    serviceStatusEvents.off('on-demand', onUpdate);
-    console.log('[SSE] Status Events Client disconnected');
-});
-    },
-};
-
-export function emitSSEUpdate() {
-    serviceStatusEvents.emit('on-demand');
-}
-
-export function emitLogChange(key: string) {
-    logChangeEvents.emit('log-change', key);
-} 

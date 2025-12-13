@@ -1,6 +1,6 @@
 import { AnsiUp } from 'ansi_up';
 import { IncomingMessage, ServerResponse } from 'http';
-import { serviceGroups } from '../impl/service-groups-collection';
+import { getConfiguredServices, serviceGroups } from '../service-agents/service-groups-collection';
 import { IServiceGroup } from '../interfaces/service-group';
 
 type RouteHandler = (req: IncomingMessage, res: ServerResponse, params?: Record<string, string>) => Promise<void> | void;
@@ -25,10 +25,10 @@ function json(res: ServerResponse, data: unknown, status = 200) {
 
 // Service Group Level Routes
 export const serviceGroupParamRoutes: Record<string, RouteHandler> = {
-    'POST /api/service-groups/:groupName/all/:action': async (req, res, params) => {
-        const groupName = params?.groupName;
+    'POST /api/service-groups/:serviceGroup/all/:action': async (req, res, params) => {
+        const serviceGroup = params?.serviceGroup;
         const action = params?.action;
-        const group: IServiceGroup | undefined = groupName ? serviceGroups[groupName] : undefined;
+        const group: IServiceGroup | undefined = serviceGroup ? serviceGroups[serviceGroup] : undefined;
 
         if (!group) {
             return json(res, { error: 'Service group not found' }, 404);
@@ -47,18 +47,18 @@ export const serviceGroupParamRoutes: Record<string, RouteHandler> = {
     },
 
     // Individual Service Level Routes
-    'POST /api/service-groups/:groupName/services/:serviceId/:action': async (req, res, params) => {
-        const groupName = params?.groupName;
+    'POST /api/service-groups/:serviceGroup/services/:serviceId/:action': async (req, res, params) => {
+        const serviceGroup = params?.serviceGroup;
         const serviceId = params?.serviceId;
         const action = params?.action;
-        const group: IServiceGroup | undefined = groupName ? serviceGroups[groupName] : undefined;
+        const group: IServiceGroup | undefined = serviceGroup ? serviceGroups[serviceGroup] : undefined;
 
         if (!group) {
             return json(res, { error: 'Service group not found' }, 404);
         }
 
         const services = await group.services;
-        const service = services.find(s => s.id === serviceId);
+        const service = services.find(s => s.serviceId === serviceId);
         if (!service) {
             return json(res, { error: 'Service not found' }, 404);
         }
@@ -78,17 +78,24 @@ export const serviceGroupParamRoutes: Record<string, RouteHandler> = {
         }
     },
 
-    'GET /api/service-groups/:groupName/services/:serviceId/logs': async (req, res, params) => {
-        const groupName = params?.groupName;
+    'GET /api/services': async (req, res) => {
+        // Return list of service groups and their services
+
+        const configuredServices = await getConfiguredServices();
+        return json(res, { services: configuredServices });
+    },
+
+    'GET /api/service-groups/:serviceGroup/services/:serviceId/logs': async (req, res, params) => {
+        const serviceGroup = params?.serviceGroup;
         const serviceId = params?.serviceId;
-        const group: IServiceGroup | undefined = groupName ? serviceGroups[groupName] : undefined;
+        const group: IServiceGroup | undefined = serviceGroup ? serviceGroups[serviceGroup] : undefined;
 
         if (!group) {
             return json(res, { error: 'Service group not found' }, 404);
         }
 
         const services = await group.services;
-        const service = services.find(s => s.id === serviceId);
+        const service = services.find(s => s.serviceId === serviceId);
         if (!service) {
             return json(res, { error: 'Service not found' }, 404);
         }

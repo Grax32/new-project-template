@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "npm run docker:check && nx run-many --target=serve --projects=api,web --parallel",
+    "start": "echo Use npm run dev to start the development environment",
+    "dev": "npm run docker:up && npm run mikro:migrate:up && npm run dev-dashboard:navigate && npm run dev-dashboard",
+    "dev:startnx": "npm run docker:check && nx run-many --target=serve --projects=api,web --parallel",
     "dev:api": "nx serve api",
     "dev:web": "nx serve web",
     "docker:up": "docker compose up -d",
@@ -14,7 +16,8 @@
     "mikro:migrate:create": "mikro-orm migration:create --config apps/api/mikro-orm.config.ts",
     "mikro:migrate:up": "mikro-orm migration:up --config apps/api/mikro-orm.config.ts",
     "mikro:migrate:down": "mikro-orm migration:down --config apps/api/mikro-orm.config.ts",
-    "dev-dashboard": "tsx dev-dashboard/dev-dashboard.ts"
+    "dev-dashboard": "cd dev-dashboard && npm start",
+    "dev-dashboard:navigate": "tsx scripts/open-web.ts http://localhost:4500/"
   },
   "private": true,
   "devDependencies": {
