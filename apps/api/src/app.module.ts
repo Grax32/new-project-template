@@ -6,7 +6,7 @@ import mikroOrmConfig from '../mikro-orm.config';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [MikroOrmModule.forRoot(mikroOrmConfig as any), UsersModule],
+  imports: [MikroOrmModule.forRoot(mikroOrmConfig), UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
