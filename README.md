@@ -55,10 +55,10 @@ git clone https://github.com/Grax32/new-project-template.git my-project
 cd my-project
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start development environment
-npm run dev
+pnpm dev
 ```
 
 Visit:
@@ -103,25 +103,25 @@ node-project-template/
 
 ```bash
 # Start everything
-npm run dev
+pnpm dev
 
 # Or start services individually
-npm run docker:up      # Database + OAuth
-npm run dev:api        # API server only
-npm run dev:web        # Frontend only
+pnpm docker:up      # Database + OAuth
+pnpm dev:api        # API server only
+pnpm dev:web        # Frontend only
 ```
 
 ### Database Operations
 
 ```bash
 # Create migration
-npm run mikro:migrate:create
+pnpm mikro:migrate:create
 
 # Run migrations
-npm run mikro:migrate:up
+pnpm mikro:migrate:up
 
 # Rollback
-npm run mikro:migrate:down
+pnpm mikro:migrate:down
 ```
 
 ### Testing
@@ -140,7 +140,7 @@ nx e2e web-e2e
 A custom web interface for managing your development environment:
 
 ```bash
-npm run dev-dashboard
+pnpm dev-dashboard
 ```
 
 Features:
@@ -163,21 +163,21 @@ docker compose -f docker-compose.prod.yml up -d
 ## 🔧 Available Scripts
 
 ### Development
-- `npm run dev` - Start full development environment
-- `npm run dev:api` - API server only
-- `npm run dev:web` - Frontend only
-- `npm run dev-dashboard` - Launch dev dashboard
+- `pnpm dev` - Start full development environment
+- `pnpm dev:api` - API server only
+- `pnpm dev:web` - Frontend only
+- `pnpm dev-dashboard` - Launch dev dashboard
 
 ### Docker
-- `npm run docker:up` - Start containers
-- `npm run docker:down` - Stop containers
-- `npm run docker:logs` - View container logs
-- `npm run docker:reset` - Reset database
+- `pnpm docker:up` - Start containers
+- `pnpm docker:down` - Stop containers
+- `pnpm docker:logs` - View container logs
+- `pnpm docker:reset` - Reset database
 
 ### Database
-- `npm run mikro:migrate:create` - Create migration
-- `npm run mikro:migrate:up` - Run migrations
-- `npm run mikro:migrate:down` - Rollback migration
+- `pnpm mikro:migrate:create` - Create migration
+- `pnpm mikro:migrate:up` - Run migrations
+- `pnpm mikro:migrate:down` - Rollback migration
 
 ## 🎨 Design Decisions
 
@@ -237,8 +237,8 @@ netstat -ano | findstr :6314
 **Database connection issues?**
 ```bash
 # Reset database
-npm run docker:reset
-npm run mikro:migrate:up
+pnpm docker:reset
+pnpm mikro:migrate:up
 ```
 
 **Permission issues with Docker?**

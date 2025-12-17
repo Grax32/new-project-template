@@ -77,30 +77,30 @@ node-project-template/
 ## Available Commands
 ```bash
 # Development
-npm run dev              # Start Docker + API + Web in parallel
-npm run dev:api          # Start API only
-npm run dev:web          # Start Web only
+pnpm dev              # Start Docker + API + Web in parallel
+pnpm dev:api          # Start API only
+pnpm dev:web          # Start Web only
 
 # Nx commands
-npx nx serve api         # Serve API with hot reload
-npx nx serve web         # Serve Web with hot reload
-npx nx build api         # Build API for production
-npx nx build web         # Build Web for production
-npx nx test api          # Run API unit tests
-npx nx test web          # Run Web unit tests
-npx nx e2e web-e2e       # Run E2E tests
-npx nx lint api          # Lint API code
-npx nx lint web          # Lint Web code
+pnpm exec nx serve api         # Serve API with hot reload
+pnpm exec nx serve web         # Serve Web with hot reload
+pnpm exec nx build api         # Build API for production
+pnpm exec nx build web         # Build Web for production
+pnpm exec nx test api          # Run API unit tests
+pnpm exec nx test web          # Run Web unit tests
+pnpm exec nx e2e web-e2e       # Run E2E tests
+pnpm exec nx lint api          # Lint API code
+pnpm exec nx lint web          # Lint Web code
 
 # Docker
-npm run docker:up        # Start PostgreSQL
-npm run docker:down      # Stop PostgreSQL
-npm run docker:logs      # View PostgreSQL logs
-npm run docker:reset     # Reset database (removes volumes)
+pnpm docker:up        # Start PostgreSQL
+pnpm docker:down      # Stop PostgreSQL
+pnpm docker:logs      # View PostgreSQL logs
+pnpm docker:reset     # Reset database (removes volumes)
 
 # Utilities
-npx nx graph             # View project dependency graph
-npx nx affected:graph    # View affected projects
+pnpm exec nx graph             # View project dependency graph
+pnpm exec nx affected:graph    # View affected projects
 ```
 
 ## Next Steps

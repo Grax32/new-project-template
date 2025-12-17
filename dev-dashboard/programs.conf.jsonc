@@ -1,4 +1,5 @@
 {
+  "port": 4500,
   // Dev Dashboard - Program Configuration
   // Each key is a unique program ID; values define how to run the program.
   "programs": {

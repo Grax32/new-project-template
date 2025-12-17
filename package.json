@@ -3,9 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "echo Use npm run dev to start the development environment",
-    "dev": "npm run docker:up && npm run mikro:migrate:up && npm run dev-dashboard:navigate && npm run dev-dashboard",
-    "dev:startnx": "npm run docker:check && nx run-many --target=serve --projects=api,web --parallel",
+    "start": "echo Use pnpm dev to start the development environment",
+    "dev": "pnpm dev:prepare:web && pnpm dev-dashboard",
+    "dev:prepare": "pnpm dev-dashboard:navigate && pnpm port-clear && pnpm docker:up && pnpm mikro:migrate:up && echo 'Preparation complete.'",
+    "dev:prepare:web": "pnpm dev:prepare 2>&1 | pnpm show-progress",
+    "dev:startnx": "pnpm docker:check && nx run-many --target=serve --projects=api,web --parallel",
     "dev:api": "nx serve api",
     "dev:web": "nx serve web",
     "docker:up": "docker compose up -d",
@@ -16,8 +18,10 @@
     "mikro:migrate:create": "mikro-orm migration:create --config apps/api/mikro-orm.config.ts",
     "mikro:migrate:up": "mikro-orm migration:up --config apps/api/mikro-orm.config.ts",
     "mikro:migrate:down": "mikro-orm migration:down --config apps/api/mikro-orm.config.ts",
-    "dev-dashboard": "cd dev-dashboard && npm start",
-    "dev-dashboard:navigate": "tsx scripts/open-web.ts http://localhost:4500/"
+    "dev-dashboard": "cd dev-dashboard && pnpm start",
+    "show-progress": "cd dev-dashboard && pnpm show-progress",
+    "dev-dashboard:navigate": "tsx scripts/open-web.ts http://localhost:4500/",
+    "port-clear": "pwsh scripts/port-usages.ps1 -Ports 4200,4500,6314"
   },
   "private": true,
   "devDependencies": {
@@ -51,6 +55,7 @@
     "@swc/helpers": "~0.5.11",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
+    "@types/uuid": "^11.0.0",
     "@typescript-eslint/utils": "^8.40.0",
     "angular-eslint": "^20.3.0",
     "eslint": "^9.8.0",
@@ -87,6 +92,7 @@
     "@mikro-orm/postgresql": "^6.6.2",
     "rxjs": "~7.8.0",
     "tsx": "^4.21.0",
+    "uuid": "^13.0.0",
     "zone.js": "~0.15.0"
   }
 }

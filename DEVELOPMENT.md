@@ -4,12 +4,12 @@
 
 ```bash
 # Start everything (Docker + API + Web)
-npm run dev
+pnpm dev
 
 # Or start individually
-npm run docker:up      # Start PostgreSQL
-npm run dev:api        # Start API only
-npm run dev:web        # Start Web only
+pnpm docker:up      # Start PostgreSQL
+pnpm dev:api        # Start API only
+pnpm dev:web        # Start Web only
 ```
 
 ## What's Running?
@@ -39,10 +39,10 @@ cp .env.example .env
 ## Docker Commands
 
 ```bash
-npm run docker:up       # Start containers
-npm run docker:down     # Stop containers
-npm run docker:logs     # View logs
-npm run docker:reset    # Reset database (removes volumes)
+pnpm docker:up       # Start containers
+pnpm docker:down     # Stop containers
+pnpm docker:logs     # View logs
+pnpm docker:reset    # Reset database (removes volumes)
 ```
 
 ## VS Code Debugging

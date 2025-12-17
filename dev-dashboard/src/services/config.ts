@@ -4,8 +4,6 @@ import * as jsoncParser from 'jsonc-parser';
 import { Configuration } from '../models/types';
 import { getErrorString } from '../shared/functions';
 
-const PORT = 4500;
-
 // We will use this date to limit the docker logs returned to only those since the server started
 // ( and maybe other things )
 const programStart = new Date();
@@ -42,7 +40,14 @@ function loadProgramsConfig(): Readonly<Configuration> {
         configuration.root = ROOT;
         configuration.solutionRoot = SOLUTIONROOT;
         configuration.startTime = programStart;
-        configuration.port = PORT;
+
+        if (!configuration.programs || typeof configuration.programs !== 'object') {
+            throw new Error("Invalid configuration: 'programs' section is missing or malformed.");
+        }
+
+        if (!configuration.port || typeof configuration.port !== 'number') {
+            throw new Error("Invalid configuration: 'port' is missing or not a number.");
+        }
 
         // Resolve working directories for each program, relative to the config file location
         Object.entries(configuration.programs).forEach(([, prog]) => {
