@@ -6,7 +6,7 @@ import { IService, IServiceGroup, IServiceState, ServiceStatus } from '../interf
 import config from '../services/config';
 import { getLogPath, readLogs } from '../services/logs';
 import { eventBus } from '../services/event-bus';
-
+import { ProgramConfig } from '../models';
 
 export const programServicesserviceGroup = "programs";
 
@@ -22,14 +22,22 @@ function treeKillAsync(pid: number, signal = 'SIGTERM'): Promise<void> {
 class ProgramService implements IService {
     private process?: ChildProcess;
     private currentStatus: ServiceStatus = 'stopped';
+    private currentHealth: 'healthy' | 'unhealthy' = 'unhealthy';
+    private healthReason = 'not running';
+
+    public get name(): string {
+        return this.programConfig.name;
+    }
+
+    private get healthCheckPatterns() {
+        return this.programConfig.healthCheckPatterns || [];
+    }
 
     constructor(
-        public readonly name: string,
+        public readonly programConfig: ProgramConfig,
         public readonly serviceId: string,
-        private readonly cmd: string,
-        private readonly args: string[],
-        private readonly cwd: string
     ) {
+        
     }
     config(): Promise<{ name: string; link: string; openPorts: number[]; }> {
         const serviceConfig = config.programs[this.serviceId];
@@ -70,25 +78,34 @@ class ProgramService implements IService {
         this.currentStatus = 'starting';
         await this.emitServiceStatusUpdate();
 
-        console.log(`Starting program: ${this.name}`);
+        const { cmd, args, cwd, name } = this.programConfig;
+
+        console.log(`Starting program: ${name}`);
         const logPath = getLogPath(this.serviceId);
         const logFd = fs.createWriteStream(logPath, { flags: 'w' });
 
-        const proc = spawn(this.cmd, this.args, {
-            cwd: this.cwd,
+        const proc = spawn(cmd, args, {
+            cwd: cwd,
             shell: true,
             stdio: ['ignore', 'pipe', 'pipe'],
         });
 
-        console.log(`Program ${this.name} started with PID: ${proc.pid}`);
-        console.log(`${this.cwd}> ${this.cmd} ${this.args.join(' ')}`);
+        console.log(`Program ${name} started with PID: ${proc.pid}`);
+        console.log(`${cwd}> ${cmd} ${args.join(' ')}`);
 
         proc.stdout.pipe(logFd);
         proc.stderr.pipe(logFd);
 
         this.process = proc;
 
-        const logChanged = () => this.emitLogChange();
+        const logChanged = (line: string) => {
+            this.emitLogChange();
+
+
+
+            const time = new Date().toISOString().split('T')[1].split('Z')[0];
+            console.log(`[${time}] ${line.toString().trim()}`);
+        }
 
         proc.stdout?.on('data', logChanged);
         proc.stderr?.on('data', logChanged);
@@ -206,7 +223,6 @@ class ProgramService implements IService {
     }
 
     async state(): Promise<IServiceState> {
-        // we need a better health check
         return {
             serviceId: this.serviceId,
             name: this.name,
@@ -241,11 +257,8 @@ class ProgramServiceGroup implements IServiceGroup {
         const { programs: programsConfig } = config;
 
         const result = Object.entries(programsConfig).map(([id, cfg]) => new ProgramService(
-            cfg.name,
-            id,
-            cfg.cmd,
-            cfg.args,
-            cfg.cwd
+            cfg,
+            id
         ));
         return result;
     }
@@ -264,7 +277,7 @@ class ProgramServiceGroup implements IServiceGroup {
         const services = await this.services;
 
         for (const service of services) {
-            result[service.name] = await service.state();
+            result[service.programConfig.name] = await service.state();
         }
 
         return result;

@@ -29,6 +29,8 @@ export interface ProgramConfig {
     cmd: string;
     /* Arguments for the command */
     args: string[];
+    /* Patterns to identify healthy state from logs */
+    healthCheckPatterns: { pattern: string; flags: string; status: 'healthy' | 'unhealthy' | 'building' | '' }[];
 }
 
 export interface Program extends ProgramConfig {
