@@ -1,12 +1,23 @@
 import { spawn, ChildProcess } from 'child_process';
 import fs from 'fs';
+import { once } from 'events'; 
 import treeKill from 'tree-kill';
 import { IService, IServiceGroup, IServiceState, ServiceStatus } from '../interfaces/service-group';
 import config from '../services/config';
 import { getLogPath, readLogs } from '../services/logs';
 import { eventBus } from '../services/event-bus';
 
+
 export const programServicesserviceGroup = "programs";
+
+function treeKillAsync(pid: number, signal = 'SIGTERM'): Promise<void> {
+    return new Promise((resolve, reject) => {
+        treeKill(pid, signal, err => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+}
 
 class ProgramService implements IService {
     private process?: ChildProcess;
@@ -149,7 +160,7 @@ class ProgramService implements IService {
         }
 
         // Kill entire process tree with SIGTERM
-        treeKill(pid, 'SIGTERM');
+        await treeKillAsync(pid, 'SIGTERM');
 
         // if the process doesn't exit within 30 seconds, force kill it
         const timeout = setTimeout(async () => {
@@ -159,11 +170,14 @@ class ProgramService implements IService {
                 console.log(`Force killing program: ${this.name} after timeout`);
                 this.currentStatus = 'killing';
                 await this.emitServiceStatusUpdate();
-                treeKill(pid, 'SIGKILL');
+                await treeKillAsync(pid, 'SIGKILL');
             }
         }, 30_000); // 30 seconds
 
         child.on('close', () => clearTimeout(timeout));
+
+        // wait for process to exit
+        await once(child, 'exit');
     }
 
     async restart(): Promise<void> {

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "echo Use pnpm dev to start the development environment",
     "dev": "pnpm dev:prepare:web && pnpm dev-dashboard",
-    "dev:prepare": "pnpm dev-dashboard:navigate && pnpm port-clear && pnpm docker:up && pnpm mikro:migrate:up && echo 'Preparation complete.'",
+    "dev:prepare": "pnpm dev-dashboard:navigate && pnpm port-clear && pnpm docker:up && pnpm mikro:migrate:up && echo Preparation complete.",
     "dev:prepare:web": "pnpm dev:prepare 2>&1 | pnpm show-progress",
     "dev:startnx": "pnpm docker:check && nx run-many --target=serve --projects=api,web --parallel",
     "dev:api": "nx serve api",
@@ -21,7 +21,7 @@
     "dev-dashboard": "cd dev-dashboard && pnpm start",
     "show-progress": "cd dev-dashboard && pnpm show-progress",
     "dev-dashboard:navigate": "tsx scripts/open-web.ts http://localhost:4500/",
-    "port-clear": "pwsh scripts/port-usages.ps1 -Ports 4200,4500,6314"
+    "port-clear": "pwsh scripts/port-usages.ps1 -Ports 4200,6314"
   },
   "private": true,
   "devDependencies": {

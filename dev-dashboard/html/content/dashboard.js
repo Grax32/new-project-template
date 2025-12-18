@@ -141,6 +141,29 @@
                 restartBtn.classList.add('hidden');
             }
 
+            const cardMetaEl = clone.querySelector('.card-meta');
+            if (cardMetaEl) {
+                cardMetaEl.replaceChildren();
+
+                if (p.link?.trim()) {
+                    const openLink = document.createElement('a');
+                    openLink.href = p.link;
+                    openLink.textContent = 'Open Service';
+                    openLink.target = '_blank';
+                    openLink.rel = 'noopener noreferrer';
+                    cardMetaEl.appendChild(openLink);
+                }
+
+                if (p.openPorts && p.openPorts.length > 0) {
+                    const portsSpan = document.createElement('span');
+                    portsSpan.className = 'ports';
+                    const portsDescriptor = p.openPorts.length > 1 ? 'Ports' : 'Port';
+                    portsSpan.textContent = `${portsDescriptor}: ${p.openPorts.join(', ')}`;
+                    cardMetaEl.appendChild(portsSpan);
+                }
+            }
+
+
             logsBtn.addEventListener('click', () => viewLogs(p.serviceGroup, p.serviceId));
             frag.appendChild(clone);
         }
