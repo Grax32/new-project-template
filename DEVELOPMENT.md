@@ -32,6 +32,7 @@ pnpm dev:web        # Start Web only
 ## Environment Variables
 
 Copy `.env.example` to `.env` and customize:
+
 ```bash
 cp .env.example .env
 ```
@@ -57,5 +58,6 @@ Use the **Debug Full Stack** compound configuration to debug both API and Web si
 ## Hot Reload
 
 Both API and Web have hot reload enabled:
+
 - **API**: NestJS watch mode - changes restart the server automatically
 - **Web**: Angular dev server - changes refresh the browser automatically

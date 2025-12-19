@@ -4,19 +4,19 @@ import { DashboardSSEMessage } from '../models/sse-status-update-message-types';
 import { LogChangeMessage } from '../models/log-change-message-types';
 
 class EventBus {
-    public static instance: EventBus = new EventBus();
-    
-    public serviceStatusEvents: TypedEventEmitter<DashboardSSEMessage>;
-    public logChangeEvents: TypedEventEmitter<LogChangeMessage>;
+  public static instance: EventBus = new EventBus();
 
-    private constructor() {
-        this.serviceStatusEvents = new TypedEventEmitter<DashboardSSEMessage>();
-        this.logChangeEvents = new TypedEventEmitter<LogChangeMessage>();
-    }
+  public serviceStatusEvents: TypedEventEmitter<DashboardSSEMessage>;
+  public logChangeEvents: TypedEventEmitter<LogChangeMessage>;
 
-    public emitServiceStatusUpdate(message: DashboardSSEMessage) {
-        this.serviceStatusEvents.emit(message);
-    }
+  private constructor() {
+    this.serviceStatusEvents = new TypedEventEmitter<DashboardSSEMessage>();
+    this.logChangeEvents = new TypedEventEmitter<LogChangeMessage>();
+  }
+
+  public emitServiceStatusUpdate(message: DashboardSSEMessage) {
+    this.serviceStatusEvents.emit(message);
+  }
 }
 
 export const eventBus = EventBus.instance;

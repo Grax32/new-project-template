@@ -17,19 +17,19 @@
         {
           "pattern": "Starting compilation in watch mode\\.|Starting incremental compilation",
           "flags": "i",
-          "status": "building"
+          "status": "building",
         },
         {
           "pattern": "Found\\s+0\\s+errors\\.\\s*Watching for file changes\\.|Found\\s+0\\s+errors\\.",
           "flags": "i",
-          "status": "healthy"
+          "status": "healthy",
         },
         {
           "pattern": "Found\\s+\\d+\\s+errors?\\.|error\\s+TS\\d+:",
           "flags": "i",
-          "status": "unhealthy"
-        }
-      ]
+          "status": "unhealthy",
+        },
+      ],
     },
 
     "web-dev": {
@@ -43,19 +43,19 @@
         {
           "pattern": "\\s*Building|Building\\.{3}|Compiling",
           "flags": "i",
-          "status": "building"
+          "status": "building",
         },
         {
           "pattern": "\\s*(Build\\s*)?succeeded|Build at:",
           "flags": "i",
-          "status": "healthy"
+          "status": "healthy",
         },
         {
           "pattern": "\\s*(Build\\s*)?failed|ERROR\\s+in|ERROR:",
           "flags": "i",
-          "status": "unhealthy"
-        }
-      ]
-    }
-  }
+          "status": "unhealthy",
+        },
+      ],
+    },
+  },
 }

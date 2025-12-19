@@ -13,5 +13,5 @@
   "MD034": false, // Allow bare URLs
   "MD040": false, // Don't require code block language
   "MD041": false, // Don't require first line to be a heading
-  "MD047": false // Ignore single trailing newline
+  "MD047": false, // Ignore single trailing newline
 }

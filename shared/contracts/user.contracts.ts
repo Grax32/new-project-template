@@ -1,4 +1,3 @@
-
 // export const getUser = {
 //     method: 'GET',
 //     path: '/users/:id',
@@ -8,5 +7,4 @@
 //     response: userSchema
 // };
 
-export const ddd = "";
- 
+export const ddd = '';

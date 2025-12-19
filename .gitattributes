@@ -1,0 +1,5 @@
+# Normalize all text files to LF in repo, convert to native on checkout
+* text=auto eol=lf
+# Windows scripts should keep CRLF
+*.bat text eol=crlf
+*.ps1 text eol=crlf

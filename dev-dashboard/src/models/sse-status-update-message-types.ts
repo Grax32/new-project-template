@@ -4,13 +4,12 @@ import { ServiceState, ServiceHealth, ServiceStatus } from './service-state';
 export type SSEMessageType = 'service-list' | 'service-status';
 
 export interface DashboardSSEBaseMessage {
-    type: SSEMessageType;
+  type: SSEMessageType;
 }
 
 export interface ServiceStatusMessage extends DashboardSSEBaseMessage, ServiceState {
-    type: 'service-status';
-    serviceGroup: string;
+  type: 'service-status';
+  serviceGroup: string;
 }
 
 export type DashboardSSEMessage = ServiceStatusMessage;
-

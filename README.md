@@ -18,23 +18,27 @@ We've made deliberate choices to eliminate decision fatigue:
 ## 🚀 Tech Stack
 
 ### Backend
+
 - **NestJS** - Progressive Node.js framework
 - **TypeScript** - Type-safe development
 - **MikroORM** - TypeScript ORM for PostgreSQL
 - **JWT + OAuth 2.0** - Authentication & authorization
 
 ### Frontend
+
 - **Angular** - Enterprise-ready SPA framework
 - **RxJS** - Reactive programming
 - **SCSS** - Component-scoped styling
 
 ### Infrastructure
+
 - **Nx** - Smart monorepo build system
 - **Docker & Docker Compose** - Containerization
 - **PostgreSQL** - Primary database
 - **Dex** - OpenID Connect provider
 
 ### Development
+
 - **Jest** - Unit testing
 - **Playwright** - E2E testing
 - **ESLint + Prettier** - Code quality
@@ -43,6 +47,7 @@ We've made deliberate choices to eliminate decision fatigue:
 ## 🏁 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - Docker & Docker Compose
 - VS Code (recommended)
@@ -62,6 +67,7 @@ pnpm dev
 ```
 
 Visit:
+
 - **Web App**: http://localhost:4200
 - **API**: http://localhost:6314
 - **Dev Dashboard**: http://localhost:4500
@@ -144,6 +150,7 @@ pnpm dev-dashboard
 ```
 
 Features:
+
 - **Docker Services**: Start/stop/restart containers
 - **Programs**: Manage API and web dev servers
 - **Logs**: Real-time log viewing
@@ -163,18 +170,21 @@ docker compose -f docker-compose.prod.yml up -d
 ## 🔧 Available Scripts
 
 ### Development
+
 - `pnpm dev` - Start full development environment
 - `pnpm dev:api` - API server only
 - `pnpm dev:web` - Frontend only
 - `pnpm dev-dashboard` - Launch dev dashboard
 
 ### Docker
+
 - `pnpm docker:up` - Start containers
 - `pnpm docker:down` - Stop containers
 - `pnpm docker:logs` - View container logs
 - `pnpm docker:reset` - Reset database
 
 ### Database
+
 - `pnpm mikro:migrate:create` - Create migration
 - `pnpm mikro:migrate:up` - Run migrations
 - `pnpm mikro:migrate:down` - Rollback migration
@@ -182,24 +192,28 @@ docker compose -f docker-compose.prod.yml up -d
 ## 🎨 Design Decisions
 
 ### Why Nx?
+
 - **Code Sharing**: Libraries shared between API and web
 - **Caching**: Smart rebuilds based on dependency graphs
 - **Tooling**: Generators, migrations, and plugins
 - **Scaling**: Proven for large enterprise monorepos
 
 ### Why NestJS?
+
 - **Modular Architecture**: Dependency injection, modules
 - **TypeScript First**: Excellent type safety
 - **Enterprise Ready**: Guards, interceptors, pipes
 - **Ecosystem**: Rich plugin ecosystem
 
 ### Why MikroORM?
+
 - **Type Safety**: Entity definitions generate types
 - **Performance**: Identity map, unit of work
 - **Migrations**: Database schema versioning
 - **Query Builder**: Type-safe query APIs
 
 ### Why Docker First?
+
 - **Consistency**: Same environment everywhere
 - **Isolation**: No "works on my machine" issues
 - **Scalability**: Easy horizontal scaling
@@ -214,6 +228,7 @@ docker compose -f docker-compose.prod.yml up -d
 5. **Submit** a Pull Request
 
 ### Code Quality
+
 - Follow TypeScript strict mode
 - Write tests for new features
 - Update documentation
@@ -228,6 +243,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ### Common Issues
 
 **Port conflicts?**
+
 ```bash
 # Check what's using ports
 netstat -ano | findstr :4200
@@ -235,6 +251,7 @@ netstat -ano | findstr :6314
 ```
 
 **Database connection issues?**
+
 ```bash
 # Reset database
 pnpm docker:reset
@@ -242,6 +259,7 @@ pnpm mikro:migrate:up
 ```
 
 **Permission issues with Docker?**
+
 ```bash
 # On Windows, ensure Docker Desktop is running
 # On Linux/Mac, you might need sudo

@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-    /* 
+      /* 
         Add path mappings for shared models
         We expect all model files to be exported from shared/models/index.ts
     */

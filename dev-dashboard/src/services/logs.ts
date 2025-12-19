@@ -16,7 +16,7 @@ export function getLogPath(programId: string): string {
 export function readLogs(programId: string, tailLines = 100): string[] {
   const logPath = getLogPath(programId);
   if (!existsSync(logPath)) return [];
-  
+
   try {
     const content = readFileSync(logPath, 'utf8');
     const lines = content.trim().split('\n').filter(Boolean);

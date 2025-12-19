@@ -11,6 +11,7 @@ Dex is an OpenID Connect (OIDC) identity provider running locally for developmen
 ## Test Users
 
 ### Admin User
+
 - **Email**: admin@example.com
 - **Password**: admin123
 - **Username**: admin
@@ -18,6 +19,7 @@ Dex is an OpenID Connect (OIDC) identity provider running locally for developmen
 - **User ID**: 08a8684b-db88-4b73-90a9-3cd1661f5466
 
 ### Member User
+
 - **Email**: member@example.com
 - **Password**: member123
 - **Username**: member
@@ -27,22 +29,25 @@ Dex is an OpenID Connect (OIDC) identity provider running locally for developmen
 ## Registered OAuth Clients
 
 ### Web Application
+
 - **Client ID**: web-app
 - **Client Secret**: web-app-secret
-- **Redirect URIs**: 
+- **Redirect URIs**:
   - http://localhost:4200/callback
   - http://localhost:4200/auth/callback
 
 ### API Server
+
 - **Client ID**: api-server
 - **Client Secret**: api-server-secret
-- **Redirect URIs**: 
+- **Redirect URIs**:
   - http://localhost:6314/callback
   - http://localhost:6314/auth/callback
 
 ## Configuration
 
 The Dex configuration is in `docker/dex/config.yaml`. It uses:
+
 - **In-memory storage** (no persistence needed for dev)
 - **Password connector** for simple username/password auth
 - **Static users** defined in config (no database needed)
@@ -83,6 +88,7 @@ Then update the hash in `docker/dex/config.yaml`.
 ⚠️ **This is a development setup only!**
 
 For production:
+
 - Use a real identity provider (Auth0, Okta, Azure AD, etc.)
 - Or configure Dex with persistent storage (PostgreSQL, etcd, etc.)
 - Use HTTPS for all OAuth endpoints

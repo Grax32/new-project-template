@@ -1,7 +1,9 @@
 # Project Architecture Overview
 
 ## Overview
+
 This project is a full-stack Nx monorepo template designed for rapid development of modern web applications. It features:
+
 - **Nx Monorepo** for efficient workspace management
 - **Node.js** backend with **NestJS** (TypeScript)
 - **Angular** frontend (TypeScript)
@@ -12,6 +14,7 @@ This project is a full-stack Nx monorepo template designed for rapid development
 - **PostgreSQL** as the primary database
 
 ## Monorepo Structure
+
 ```
 node-project-template/
 ├── apps/
@@ -59,6 +62,7 @@ node-project-template/
 ```
 
 ## Key Features
+
 - **Nx Monorepo** for unified build system, caching, and dependency management
 - **TypeScript everywhere** for type safety
 - **Dependency Injection** (NestJS and Angular) for modularity and testability
@@ -68,6 +72,7 @@ node-project-template/
 - **Unit/Integration Testing** with Jest for reliability
 
 ## Nx Benefits
+
 - **Smart rebuilds** - Only rebuilds what changed
 - **Computation caching** - Speeds up builds and tests
 - **Code generation** - Scaffolds components, services, etc.
@@ -75,6 +80,7 @@ node-project-template/
 - **Consistent tooling** - Unified commands across all apps
 
 ## Available Commands
+
 ```bash
 # Development
 pnpm dev              # Start Docker + API + Web in parallel
@@ -104,6 +110,7 @@ pnpm exec nx affected:graph    # View affected projects
 ```
 
 ## Next Steps
+
 - Implement OAuth authentication (both API and Web)
 - Connect API to PostgreSQL using TypeORM or Prisma
 - Add API endpoints for CRUD operations

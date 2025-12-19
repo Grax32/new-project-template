@@ -1,47 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dev Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/content/dashboard.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/content/dashboard.css" />
+  </head>
 
-</head>
-
-<body>
+  <body>
     <div id="connection-banner" class="connection-banner hidden">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        Server connection unavailable
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      Server connection unavailable
     </div>
     <h1><i class="fa-solid fa-user-gear"></i> Dev Dashboard</h1>
 
     <div class="section-header">
-        <h2>Docker Compose Services</h2>
-        <div class="btn-group">
-            <button class="btn btn-start start-all-docker">
-                <i class="fa-solid fa-rocket"></i> Start All
-            </button>
-            <button class="btn btn-stop stop-all-docker">
-                <i class="fa-solid fa-ban"></i> Stop All
-            </button>
-        </div>
+      <h2>Docker Compose Services</h2>
+      <div class="btn-group">
+        <button class="btn btn-start start-all-docker">
+          <i class="fa-solid fa-rocket"></i> Start All
+        </button>
+        <button class="btn btn-stop stop-all-docker">
+          <i class="fa-solid fa-ban"></i> Stop All
+        </button>
+      </div>
     </div>
     <div class="grid" id="docker-grid"></div>
 
     <div class="section-header">
-        <h2>Programs</h2>
-        <div class="btn-group">
-            <button class="btn btn-start start-all-programs">
-                <i class="fa-solid fa-rocket"></i> Start All
-            </button>
-            <button class="btn btn-stop stop-all-programs">
-                <i class="fa-solid fa-ban"></i> Stop All
-            </button>
-        </div>
+      <h2>Programs</h2>
+      <div class="btn-group">
+        <button class="btn btn-start start-all-programs">
+          <i class="fa-solid fa-rocket"></i> Start All
+        </button>
+        <button class="btn btn-stop stop-all-programs">
+          <i class="fa-solid fa-ban"></i> Stop All
+        </button>
+      </div>
     </div>
     <div class="grid" id="programs-grid"></div>
 
@@ -49,30 +51,29 @@
     <script src="/content/dashboard.js"></script>
 
     <template id="service-card-template">
-        <div class="card">
-            <div class="card-info">
-                <span class="card-title">${serviceName}</span>
-                <div class="card-meta">
-                    <span class="custom"></span>
-                    <button class="btn btn-logs">Logs</button>
-                </div>
-            </div>
-            <div class="card-status">
-                <span class="status status-value">${status}</span>
-                <span class="status-health">
-                    <span class="status-healthy"><i class="fa-solid fa-check-circle"></i> Healthy</span>
-                    <span class="status-unhealthy"><i class="fa-solid fa-times-circle"></i> Unhealthy</span>
-                </span>
-            </div>
-            <div class="card-actions">
-                <div class="btn-group">
-                    <button class="btn btn-start">Start</button>
-                    <button class="btn btn-stop">Stop</button>
-                    <button class="btn btn-restart">Restart</button>
-                </div>
-            </div>
+      <div class="card">
+        <div class="card-info">
+          <span class="card-title">${serviceName}</span>
+          <div class="card-meta">
+            <span class="custom"></span>
+            <button class="btn btn-logs">Logs</button>
+          </div>
         </div>
+        <div class="card-status">
+          <span class="status status-value">${status}</span>
+          <span class="status-health">
+            <span class="status-healthy"><i class="fa-solid fa-check-circle"></i> Healthy</span>
+            <span class="status-unhealthy"><i class="fa-solid fa-times-circle"></i> Unhealthy</span>
+          </span>
+        </div>
+        <div class="card-actions">
+          <div class="btn-group">
+            <button class="btn btn-start">Start</button>
+            <button class="btn btn-stop">Stop</button>
+            <button class="btn btn-restart">Restart</button>
+          </div>
+        </div>
+      </div>
     </template>
-</body>
-
+  </body>
 </html>

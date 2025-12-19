@@ -12,6 +12,7 @@ This folder contains pure TypeScript interfaces and types that are shared betwee
 ## Usage
 
 Import models in your apps:
+
 ```typescript
 import { User } from '@shared/models';
 ```
@@ -23,6 +24,7 @@ import { User } from '@shared/models';
 3. Export it in `index.ts`
 
 Example:
+
 ```typescript
 // product.model.ts
 export interface Product {
@@ -33,6 +35,7 @@ export interface Product {
 ```
 
 Then add to `index.ts`:
+
 ```typescript
 export * from './product.model';
 ```
