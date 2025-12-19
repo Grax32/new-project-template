@@ -41,17 +41,17 @@
       "openPorts": [4200],
       "healthCheckPatterns": [
         {
-          "pattern": "\\[BuildStatus\\]\\s*Building|Building\\.{3}|Compiling",
+          "pattern": "\\s*Building|Building\\.{3}|Compiling",
           "flags": "i",
           "status": "building"
         },
         {
-          "pattern": "\\[BuildStatus\\]\\s*(Build\\s*)?succeeded|Build at:",
+          "pattern": "\\s*(Build\\s*)?succeeded|Build at:",
           "flags": "i",
           "status": "healthy"
         },
         {
-          "pattern": "\\[BuildStatus\\]\\s*(Build\\s*)?failed|ERROR\\s+in|ERROR:",
+          "pattern": "\\s*(Build\\s*)?failed|ERROR\\s+in|ERROR:",
           "flags": "i",
           "status": "unhealthy"
         }

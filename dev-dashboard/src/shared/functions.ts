@@ -1,9 +1,9 @@
 import { IncomingMessage } from "http";
 
 export function getErrorString(e: unknown): string {
-  if (e instanceof Error) return e.message;
-  if (typeof e === 'string') return e;
-  return String(e);
+    if (e instanceof Error) return e.message;
+    if (typeof e === 'string') return e;
+    return String(e);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,4 +35,10 @@ export class Lazy<T> {
         }
         return this._value;
     }
+}
+
+export function errorToString(err: unknown): string {
+    if (typeof err === 'string') return err;
+    if (err instanceof Error) return err.message;
+    return String(err);
 }

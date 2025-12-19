@@ -32,12 +32,15 @@ async function startAllServices() {
 
 startAllServices();
 
-function cleanShutdown() {
+let shuttingDown = false;
+async function cleanShutdown() {
+    if (shuttingDown) return;
+    shuttingDown = true;
     console.log('Shutting down services...');
-    Object.entries(serviceGroups).forEach(([name, group]) => {
+    await Promise.all(Object.entries(serviceGroups).map(async ([name, group]) => {
         console.log(`Shutting down service group: ${name}`);
-        group.shutdown();
-    });
+        await group.shutdown();
+    }));
     process.exit(0);
 }
 
@@ -46,15 +49,15 @@ if (process.stdin.isTTY && process.stdin.setRawMode) {
 
     process.stdin.setRawMode(true);
     process.stdin.resume();
-    process.stdin.on('data', (buf) => {
+    process.stdin.on('data', async (buf) => {
         const input = buf.toString().toLowerCase();
         if (input === 'q' || buf[0] === 27 || buf[0] === 3) { // 'q' or ESC key or Ctrl+C
-            cleanShutdown();
+            await cleanShutdown();
         }
     });
 }
 
-process.on('SIGINT', () => {
+process.once('SIGINT', async () => {
     console.log('\nShutting down...');
-    cleanShutdown();
+    await cleanShutdown();
 });

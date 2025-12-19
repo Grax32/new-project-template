@@ -13,6 +13,10 @@ class EventBus {
         this.serviceStatusEvents = new TypedEventEmitter<DashboardSSEMessage>();
         this.logChangeEvents = new TypedEventEmitter<LogChangeMessage>();
     }
+
+    public emitServiceStatusUpdate(message: DashboardSSEMessage) {
+        this.serviceStatusEvents.emit(message);
+    }
 }
 
 export const eventBus = EventBus.instance;

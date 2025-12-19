@@ -35,7 +35,7 @@ export const sseRoutes: Record<string, RouteHandler> = {
             console.log('[SSE] Log Events Client disconnected');
         });
     },
-    'GET /api/serviceStatusEvents': (req, res) => {
+    'GET /api/serviceStatusEvents': async (req, res) => {
         writeEventStreamHeader(res);
 
         // On status update, send status message to client
@@ -44,40 +44,18 @@ export const sseRoutes: Record<string, RouteHandler> = {
         // Subscribe to status update events
         eventBus.serviceStatusEvents.on('service-status', sendEventToClient);
 
-        const fetchAllServiceStatuses = async (): Promise<ServiceStatusMessage[]> => {
-            const allServices = await getAllServices();
-            return await Promise.all(
-                allServices.map(async ({ serviceGroup, service }) => {
-                    const state = await service.state();
-                    return {
-                        type: 'service-status',
-                        serviceId: service.serviceId,
-                        serviceGroup,
-                        status: state.status,
-                        healthy: state.health.isHealthy,
-                        healthReason: state.health.reason,
-                    };
-                })
-            );
-        };
-
-        // Send all current statuses as individual service-status messages
-        fetchAllServiceStatuses().then(statusMsgs => {
-            for (const msg of statusMsgs) {
-                sendEventToClient(msg);
-            }
-        });
+        const allServices = await getAllServices();
 
         // Interval: send all statuses every 30s
-        const sendCurrentStatusOnInterval = async () => {
-            const statusMsgs = await fetchAllServiceStatuses();
-            for (const msg of statusMsgs) {
-                sendEventToClient(msg);
-            }
+        const sendCurrentStatusOnInterval = async (force: boolean) => {
+            await Promise.all(allServices.map(async (service) => service.service.checkForStateChange(force)));
         };
 
-        const interval = setInterval(sendCurrentStatusOnInterval, STATUS_INTERVAL);
-        eventBus.serviceStatusEvents.on('service-status', sendEventToClient);
+        // Initial send
+        await sendCurrentStatusOnInterval(true);
+
+        // Set up interval
+        const interval = setInterval(() => sendCurrentStatusOnInterval(false), STATUS_INTERVAL);
 
         req.on('close', () => {
             clearInterval(interval);

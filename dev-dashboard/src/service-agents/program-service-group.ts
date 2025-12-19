@@ -1,12 +1,12 @@
 import { spawn, ChildProcess } from 'child_process';
 import fs from 'fs';
-import { once } from 'events'; 
+import { once } from 'events';
 import treeKill from 'tree-kill';
-import { IService, IServiceGroup, IServiceState, ServiceStatus } from '../interfaces/service-group';
+import { IService, IServiceGroup } from '../interfaces'
 import config from '../services/config';
 import { getLogPath, readLogs } from '../services/logs';
 import { eventBus } from '../services/event-bus';
-import { ProgramConfig } from '../models';
+import { ProgramConfig, ServiceHealth, ServiceState, ServiceStatus } from '../models';
 
 export const programServicesserviceGroup = "programs";
 
@@ -19,25 +19,42 @@ function treeKillAsync(pid: number, signal = 'SIGTERM'): Promise<void> {
     });
 }
 
+type HealthCheckPattern = {
+    pattern: RegExp;
+    status: ServiceHealth;
+};
+
 class ProgramService implements IService {
     private process?: ChildProcess;
     private currentStatus: ServiceStatus = 'stopped';
-    private currentHealth: 'healthy' | 'unhealthy' = 'unhealthy';
+    private currentHealth: ServiceHealth = '';
     private healthReason = 'not running';
+
+    private previouslyEmittedState: ServiceState = {
+        serviceId: this.serviceId,
+        name: this.name,
+        status: 'stopped',
+        health: '',
+        healthDetails: 'not running'
+    }
 
     public get name(): string {
         return this.programConfig.name;
     }
 
-    private get healthCheckPatterns() {
-        return this.programConfig.healthCheckPatterns || [];
-    }
+    private healthCheckPatterns: HealthCheckPattern[] = this
+        .programConfig
+        .healthCheckPatterns
+        .map(hcp => ({
+            pattern: new RegExp(hcp.pattern, hcp.flags),
+            status: hcp.status,
+        }));
 
     constructor(
         public readonly programConfig: ProgramConfig,
         public readonly serviceId: string,
     ) {
-        
+
     }
     config(): Promise<{ name: string; link: string; openPorts: number[]; }> {
         const serviceConfig = config.programs[this.serviceId];
@@ -55,9 +72,9 @@ class ProgramService implements IService {
             type: 'service-status',
             serviceId: this.serviceId,
             serviceGroup: programServicesserviceGroup,
+            name: this.name,
             status: state.status,
-            healthy: state.health.isHealthy,
-            healthReason: state.health.reason,
+            health: state.health,
         });
     }
 
@@ -101,11 +118,24 @@ class ProgramService implements IService {
         const logChanged = (line: string) => {
             this.emitLogChange();
 
+            this.healthCheckPatterns.forEach(hcp => {
+                const match = hcp.pattern.test(line.toString());
+                console.log('line:', line.toString(), 'pattern:', hcp.pattern, 'match:', match);
+            });
 
+            const healthStatusMatch = this.healthCheckPatterns
+                .find(hcp => hcp.pattern.test(line.toString()));
+
+            if (healthStatusMatch) {
+                console.log(`Program ${this.name} health status changed to: ${healthStatusMatch.status}`);
+                this.currentHealth = healthStatusMatch.status;
+                this.healthReason = '';
+                this.emitServiceStatusUpdate();
+            }
 
             const time = new Date().toISOString().split('T')[1].split('Z')[0];
             console.log(`[${time}] ${line.toString().trim()}`);
-        }
+        };
 
         proc.stdout?.on('data', logChanged);
         proc.stderr?.on('data', logChanged);
@@ -159,7 +189,7 @@ class ProgramService implements IService {
 
             if (this.process.pid) {
                 console.log(`Attempting to kill program ${this.name}.`);
-                treeKill(this.process.pid, 'SIGKILL');
+                await treeKillAsync(this.process.pid, 'SIGKILL');
             }
             return;
         }
@@ -222,13 +252,28 @@ class ProgramService implements IService {
         return this.currentStatus;
     }
 
-    async state(): Promise<IServiceState> {
+    async state(): Promise<ServiceState> {
         return {
             serviceId: this.serviceId,
             name: this.name,
             status: this.currentStatus,
-            health: { isHealthy: this.currentStatus === 'running', reason: this.currentStatus },
+            health: this.currentHealth,
+            healthDetails: this.healthReason
         };
+    }
+
+    async checkForStateChange(forceSend = false): Promise<void> {
+        const currentState = await this.state();
+
+        if (
+            forceSend ||
+            this.previouslyEmittedState.status !== currentState.status ||
+            this.previouslyEmittedState.health !== currentState.health ||
+            this.previouslyEmittedState.healthDetails !== currentState.healthDetails
+        ) {
+            this.previouslyEmittedState = currentState;
+            await this.emitServiceStatusUpdate();
+        }
     }
 
     async logs(tail?: number): Promise<string> {
@@ -271,8 +316,8 @@ class ProgramServiceGroup implements IServiceGroup {
         await Promise.all(this.programServices.map(s => s.stop()));
     }
 
-    async state(): Promise<Record<string, IServiceState>> {
-        const result: Record<string, IServiceState> = {};
+    async state(): Promise<Record<string, ServiceState>> {
+        const result: Record<string, ServiceState> = {};
 
         const services = await this.services;
 

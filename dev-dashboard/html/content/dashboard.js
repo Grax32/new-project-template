@@ -102,7 +102,7 @@
             const statusHealthyEl = clone.querySelector('.status-healthy');
             const statusUnhealthyEl = clone.querySelector('.status-unhealthy');
 
-            const isHealthy = p.healthy === true;
+            const isHealthy = p.health === 'healthy';
 
             if (p.status !== 'running') {
                 statusHealthyEl.style.display = 'none';
@@ -141,7 +141,7 @@
                 restartBtn.classList.add('hidden');
             }
 
-            const cardMetaEl = clone.querySelector('.card-meta');
+            const cardMetaEl = clone.querySelector('.card-meta .custom');
             if (cardMetaEl) {
                 cardMetaEl.replaceChildren();
 
@@ -250,24 +250,6 @@
     function refresh() {
         renderServiceGroup('programs', state.filter(s => s.serviceGroup === 'programs'));
         renderServiceGroup('docker', state.filter(s => s.serviceGroup === 'docker'));
-    }
-
-    function serviceItemArrayEquals(a, b) {
-        if (a.length !== b.length) return false;
-
-        for (let i = 0; i < a.length; i++) {
-            const itemA = a[i];
-            const itemB = b.find(bItem =>
-                bItem.serviceGroup === itemA.serviceGroup &&
-                bItem.serviceId === itemA.serviceId &&
-                bItem.serviceName === itemA.serviceName &&
-                bItem.status === itemA.status &&
-                bItem.healthy === itemA.healthy
-            );
-
-            if (!itemB) return false;
-        }
-        return true;
     }
 
     function serviceItemArraySort(serviceItems) {

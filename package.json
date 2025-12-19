@@ -21,7 +21,8 @@
     "dev-dashboard": "cd dev-dashboard && pnpm start",
     "show-progress": "cd dev-dashboard && pnpm show-progress",
     "dev-dashboard:navigate": "tsx scripts/open-web.ts http://localhost:4500/",
-    "port-clear": "pwsh scripts/port-usages.ps1 -Ports 4200,6314"
+    "port-clear": "pwsh scripts/port-usages.ps1 -Ports 4200,6314",
+    "kill-port": "pwsh scripts/kill-port.ps1 -Port 4200 && pwsh scripts/kill-port.ps1 -Port 6314"
   },
   "private": true,
   "devDependencies": {

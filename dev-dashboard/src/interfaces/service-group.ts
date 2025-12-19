@@ -1,21 +1,4 @@
-export type ServiceStatus =
-    | 'restarting'
-    | 'killing'
-    | 'killed'
-    | 'starting'
-    | 'stopping'
-    | 'stopped'
-    | 'running'
-    | 'error'
-    | 'paused'
-    | 'unknown';
-
-export interface IServiceState {
-    serviceId: string;
-    name: string;
-    status: ServiceStatus;
-    health: { isHealthy: boolean; reason: string; };
-}
+import { ServiceState } from "../models";
 
 export interface IService {
     serviceId: string;
@@ -25,7 +8,8 @@ export interface IService {
     restart(): Promise<void>;
     logs(tail?: number): Promise<string>;
 
-    state(): Promise<IServiceState>;
+    state(): Promise<ServiceState>;
+    checkForStateChange(force?: boolean): Promise<void>;
     config(): Promise<{
         name: string;
         link: string;
@@ -38,6 +22,6 @@ export interface IServiceGroup {
     services: Promise<IService[]>;
     start(): Promise<void>;
     stop(): Promise<void>;
-    state(): Promise<Record<string, IServiceState>>;
+    state(): Promise<Record<string, ServiceState>>;
     shutdown(): Promise<void>;
 }

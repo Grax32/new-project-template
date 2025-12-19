@@ -79,6 +79,13 @@ a:hover {
   gap: 0.75rem;
   font-size: 0.85rem;
 }
+
+.card-meta .custom {
+  gap: 0.75rem;
+  display: flex;
+  flex-direction: row;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -167,7 +174,7 @@ a:hover {
 .status.error::before {
   /* The specific Unicode value for 'fa-circle-xmark' */
   content: '\f057';
-},
+}
 
 .status.killed,
 .status.stopped,

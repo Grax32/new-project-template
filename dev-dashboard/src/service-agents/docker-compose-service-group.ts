@@ -1,10 +1,11 @@
 import config from '../services/config';
 import { Lazy } from '../shared/functions';
 import { DockerInspectContainer, DockerPsContainer } from '../interfaces/docker-types';
-import { IService, IServiceGroup as IServiceGroup, IServiceState, ServiceStatus } from '../interfaces/service-group';
+import { IService, IServiceGroup } from '../interfaces/service-group';
 import { exec } from 'child_process';
 import utility from 'util';
 import { eventBus } from '../services/event-bus';
+import { ServiceState, ServiceStatus } from '../models';
 
 export const dockerServicesserviceGroup = "docker";
 
@@ -83,6 +84,14 @@ class DockerComposeService implements IService {
 
     public name: string = this.serviceId;
 
+    private previouslyEmittedState: ServiceState = {
+        serviceId: this.serviceId,
+        name: this.name,
+        status: 'stopped',
+        health: '',
+        healthDetails: 'not running'
+    };
+
     constructor(
         public readonly serviceId: string,
     ) {
@@ -115,64 +124,51 @@ class DockerComposeService implements IService {
         });
     }
 
-    private async emitServiceStatusUpdate() {
-        const state = await this.state();
-
-        eventBus.serviceStatusEvents.emit({
-            type: 'service-status',
-            serviceId: this.serviceId,
-            serviceGroup: dockerServicesserviceGroup,
-            status: state.status,
-            healthy: state.health.isHealthy,
-            healthReason: state.health.reason,
-        });
-    }
-
     /**
      * Set (or clear) a status override and then emit a status update
      * @param overrideStatus 
      */
     async setStatusOverride(overrideStatus: ServiceStatus | null) {
         this.statusOverride = overrideStatus;
-        await this.emitServiceStatusUpdate();
+        await this.checkForStateChange();
     }
 
     async start(): Promise<void> {
         try {
             this.statusOverride = 'starting';
-            await this.emitServiceStatusUpdate();
+            await this.checkForStateChange();
             await executeDockerCommand(`compose up -d ${this.serviceId}`);
             this.details = await getDockerComposeInspect(this.serviceId);
         } finally {
             this.statusOverride = null;
-            await this.emitServiceStatusUpdate();
+            await this.checkForStateChange();
         }
     }
 
     async stop(): Promise<void> {
         try {
             this.statusOverride = 'stopping';
-            await this.emitServiceStatusUpdate();
+            await this.checkForStateChange();
             await executeDockerCommand(`compose stop ${this.serviceId}`);
         } finally {
             this.statusOverride = null;
-            await this.emitServiceStatusUpdate();
+            await this.checkForStateChange();
         }
     }
 
     async restart(): Promise<void> {
         try {
             this.statusOverride = 'restarting';
-            await this.emitServiceStatusUpdate();
+            await this.checkForStateChange();
 
             await executeDockerCommand(`compose restart ${this.serviceId}`);
         } finally {
             this.statusOverride = null;
-            await this.emitServiceStatusUpdate();
+            await this.checkForStateChange();
         }
     }
 
-    async state(): Promise<IServiceState> {
+    async state(): Promise<ServiceState> {
 
         const dockerPs = await getDockerComposePs();
         const container = dockerPs.find(c => c.Service === this.serviceId);
@@ -180,14 +176,13 @@ class DockerComposeService implements IService {
         const status = this.statusOverride ? this.statusOverride : this.normalizeStatus(container ? container.State : null);
 
         if (container && container.Health) {
+            const health = container.Health.toLowerCase() === 'healthy' ? 'healthy' : 'unhealthy';
+
             return {
                 serviceId: this.serviceId,
                 name: this.serviceId,
                 status,
-                health: {
-                    isHealthy: container.Health.toLowerCase() === 'healthy',
-                    reason: container.Health
-                }
+                health
             };
         }
 
@@ -197,11 +192,26 @@ class DockerComposeService implements IService {
             serviceId: this.serviceId,
             name: this.serviceId,
             status,
-            health: {
-                isHealthy: false,
-                reason: 'Unknown'
-            },
+            health: 'unhealthy'
         };
+    }
+
+    async checkForStateChange(forceSend = false): Promise<void> {
+        const currentState = await this.state();
+
+        if (
+            forceSend ||
+            this.previouslyEmittedState.status !== currentState.status ||
+            this.previouslyEmittedState.health !== currentState.health ||
+            this.previouslyEmittedState.healthDetails !== currentState.healthDetails
+        ) {
+            this.previouslyEmittedState = currentState;
+            eventBus.serviceStatusEvents.emit({
+                type: 'service-status',
+                serviceGroup: dockerServicesserviceGroup,
+                ...currentState
+            });
+        }
     }
 
     private normalizeStatus(rawStatus: string | null): ServiceStatus {
@@ -279,8 +289,8 @@ class DockerComposeServiceGroup implements IServiceGroup {
         await this.setStatusOverrideForAllServices(null);
     }
 
-    async state(): Promise<Record<string, IServiceState>> {
-        const result: Record<string, IServiceState> = {};
+    async state(): Promise<Record<string, ServiceState>> {
+        const result: Record<string, ServiceState> = {};
 
         const services = await this.services;
 
