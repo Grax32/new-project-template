@@ -1,17 +1,17 @@
 packages:
-  - packages/*
-  - apps/*
-  - dev-dashboard
+    - packages/*
+    - apps/*
+    - dev-dashboard
 
 ignoredBuiltDependencies:
-  - '@nestjs/core'
-  - '@nx/angular-rspack-compiler'
-  - '@parcel/watcher'
-  - '@swc/core'
-  - core-js
-  - esbuild
-  - less
-  - lmdb
-  - msgpackr-extract
-  - nx
-  - unrs-resolver
+    - '@nestjs/core'
+    - '@nx/angular-rspack-compiler'
+    - '@parcel/watcher'
+    - '@swc/core'
+    - core-js
+    - esbuild
+    - less
+    - lmdb
+    - msgpackr-extract
+    - nx
+    - unrs-resolver

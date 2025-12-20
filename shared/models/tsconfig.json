@@ -1,20 +1,20 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "lib": ["es2020"],
-    "target": "es2020",
-    "module": "esnext",
-    // Restrict imports - models should be pure data structures
-    "noImplicitAny": true,
-    "paths": {}
-  },
-  "include": ["./**/*.ts"],
-  "exclude": ["node_modules"]
+    "compilerOptions": {
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "lib": ["es2020"],
+        "target": "es2020",
+        "module": "esnext",
+        // Restrict imports - models should be pure data structures
+        "noImplicitAny": true,
+        "paths": {}
+    },
+    "include": ["./**/*.ts"],
+    "exclude": ["node_modules"]
 }

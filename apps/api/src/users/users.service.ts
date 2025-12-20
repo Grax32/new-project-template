@@ -5,15 +5,15 @@ import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private readonly repo: EntityRepository<User>) {}
+    constructor(@InjectRepository(User) private readonly repo: EntityRepository<User>) {}
 
-  async create(dto: Partial<User>) {
-    const u = this.repo.create(dto as User);
-    await this.repo.getEntityManager().persistAndFlush(u);
-    return u;
-  }
+    async create(dto: Partial<User>) {
+        const u = this.repo.create(dto as User);
+        await this.repo.getEntityManager().persistAndFlush(u);
+        return u;
+    }
 
-  findAll() {
-    return this.repo.findAll();
-  }
+    findAll() {
+        return this.repo.findAll();
+    }
 }

@@ -1,51 +1,51 @@
 issuer: http://localhost:5556/dex
 
 storage:
-  type: memory
+    type: memory
 
 web:
-  http: 0.0.0.0:5556
+    http: 0.0.0.0:5556
 
 telemetry:
-  http: 0.0.0.0:5558
+    http: 0.0.0.0:5558
 
 # OAuth2 clients that can request tokens
 oauth2:
-  skipApprovalScreen: true
+    skipApprovalScreen: true
 
 staticClients:
-  - id: web-app
-    redirectURIs:
-      - 'http://localhost:4200/callback'
-      - 'http://localhost:4200/auth/callback'
-    name: 'Web Application'
-    secret: web-app-secret
+    - id: web-app
+      redirectURIs:
+          - 'http://localhost:4200/callback'
+          - 'http://localhost:4200/auth/callback'
+      name: 'Web Application'
+      secret: web-app-secret
 
-  - id: api-server
-    redirectURIs:
-      - 'http://localhost:6314/callback'
-      - 'http://localhost:6314/auth/callback'
-    name: 'API Server'
-    secret: api-server-secret
+    - id: api-server
+      redirectURIs:
+          - 'http://localhost:6314/callback'
+          - 'http://localhost:6314/auth/callback'
+      name: 'API Server'
+      secret: api-server-secret
 
 # Enable the password connector for local development
 enablePasswordDB: true
 
 # Static users for development
 staticPasswords:
-  - email: 'admin@example.com'
-    hash: '$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W' # password: admin123
-    username: 'admin'
-    userID: '08a8684b-db88-4b73-90a9-3cd1661f5466'
-    groups:
-      - 'admins'
-      - 'users'
+    - email: 'admin@example.com'
+      hash: '$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W' # password: admin123
+      username: 'admin'
+      userID: '08a8684b-db88-4b73-90a9-3cd1661f5466'
+      groups:
+          - 'admins'
+          - 'users'
 
-  - email: 'member@example.com'
-    hash: '$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W' # password: member123
-    username: 'member'
-    userID: '41331323-6f44-45e6-b3b9-2c4b60c02be5'
-    groups:
-      - 'users'
+    - email: 'member@example.com'
+      hash: '$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W' # password: member123
+      username: 'member'
+      userID: '41331323-6f44-45e6-b3b9-2c4b60c02be5'
+      groups:
+          - 'users'
 
 connectors: []

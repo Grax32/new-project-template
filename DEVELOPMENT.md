@@ -15,17 +15,17 @@ pnpm dev:web        # Start Web only
 ## What's Running?
 
 - **PostgreSQL**: http://localhost:5432
-  - Database: `devdb`
-  - User: `devuser`
-  - Password: `devpass`
+    - Database: `devdb`
+    - User: `devuser`
+    - Password: `devpass`
 
 - **Dex OAuth**: http://localhost:5556/dex
-  - Admin: admin@example.com / admin123
-  - Member: member@example.com / member123
-  - Discovery: http://localhost:5556/dex/.well-known/openid-configuration
+    - Admin: admin@example.com / admin123
+    - Member: member@example.com / member123
+    - Discovery: http://localhost:5556/dex/.well-known/openid-configuration
 
 - **API**: http://localhost:6314
-  - Healthcheck: http://localhost:6314/healthcheck
+    - Healthcheck: http://localhost:6314/healthcheck
 
 - **Web**: http://localhost:4200
 

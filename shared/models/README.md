@@ -28,9 +28,9 @@ Example:
 ```typescript
 // product.model.ts
 export interface Product {
-  id: string;
-  name: string;
-  price: number;
+    id: string;
+    name: string;
+    price: number;
 }
 ```
 

@@ -33,16 +33,16 @@ Dex is an OpenID Connect (OIDC) identity provider running locally for developmen
 - **Client ID**: web-app
 - **Client Secret**: web-app-secret
 - **Redirect URIs**:
-  - http://localhost:4200/callback
-  - http://localhost:4200/auth/callback
+    - http://localhost:4200/callback
+    - http://localhost:4200/auth/callback
 
 ### API Server
 
 - **Client ID**: api-server
 - **Client Secret**: api-server-secret
 - **Redirect URIs**:
-  - http://localhost:6314/callback
-  - http://localhost:6314/auth/callback
+    - http://localhost:6314/callback
+    - http://localhost:6314/auth/callback
 
 ## Configuration
 

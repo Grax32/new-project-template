@@ -1,4 +1,4 @@
 {
-  "editor.formatOnPaste": true,
-  "nx-console.terminal.integrated": true
+    "editor.formatOnPaste": true,
+    "nx-console.terminal.integrated": true
 }

@@ -1,0 +1,61 @@
+{
+    "port": 4500,
+    // Dev Dashboard - Program Configuration
+    // Each key is a unique program ID; values define how to run the program.
+    "programs": {
+        "api-debug": {
+            // The working directory for the command.  Relative to the config file
+            "cwd": "../",
+            "name": "API (Debug)",
+            "cmd": "npx",
+            "args": ["nx", "serve", "api", "--configuration=development"],
+            "link": "http://localhost:6314",
+            "openPorts": [6314],
+
+            // Patterns to look for in the program output to determine when the program is "healthy"
+            "healthCheckPatterns": [
+                {
+                    "pattern": "Starting compilation in watch mode\\.|Starting incremental compilation",
+                    "flags": "i",
+                    "status": "building",
+                },
+                {
+                    "pattern": "Found\\s+0\\s+errors\\.\\s*Watching for file changes\\.|Found\\s+0\\s+errors\\.",
+                    "flags": "i",
+                    "status": "healthy",
+                },
+                {
+                    "pattern": "Found\\s+\\d+\\s+errors?\\.|error\\s+TS\\d+:",
+                    "flags": "i",
+                    "status": "unhealthy",
+                },
+            ],
+        },
+
+        "web-dev": {
+            "cwd": "../",
+            "name": "Web (Angular)",
+            "cmd": "npx",
+            "args": ["nx", "run", "web:dev-serve"],
+            "link": "http://localhost:4200",
+            "openPorts": [4200],
+            "healthCheckPatterns": [
+                {
+                    "pattern": "\\s*Building|Building\\.{3}|Compiling",
+                    "flags": "i",
+                    "status": "building",
+                },
+                {
+                    "pattern": "\\s*(Build\\s*)?succeeded|Build at:",
+                    "flags": "i",
+                    "status": "healthy",
+                },
+                {
+                    "pattern": "\\s*(Build\\s*)?failed|ERROR\\s+in|ERROR:",
+                    "flags": "i",
+                    "status": "unhealthy",
+                },
+            ],
+        },
+    },
+}
